@@ -12,6 +12,8 @@ const sendMessage = async (req: Request) => {
   const senderId = req.user?.userId;
   const data = req.body;
 
+  console.log("senderId", senderId, receiverId)
+
   const { message } = data;
 
   if (receiverId === null || senderId === null) {
@@ -82,6 +84,8 @@ const conversationUser = async () => {
 
   // return conversationsWithMessages;
   const messageConversations = await Message.distinct('conversationId');
+
+  console.log("messageConversations", messageConversations)
 
   const conversations = await Conversation.find({
     _id: { $in: messageConversations },

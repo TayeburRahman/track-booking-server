@@ -15,6 +15,8 @@ const sendEmail = async (options: IEmailOptions): Promise<void> => {
   });
   const { email, subject, html } = options;
 
+  // console.log("hello", email, subject)
+
   const mailOptions = {
     from: `${config.smtp.NAME} <${config.smtp.smtp_mail}>`,
     to: email,

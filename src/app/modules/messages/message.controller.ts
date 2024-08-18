@@ -30,6 +30,8 @@ const conversationUser: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const result = await messageService.conversationUser();
 
+    console.log("result", result)
+
     sendResponse(res, {
       statusCode: 200,
       success: true,

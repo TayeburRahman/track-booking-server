@@ -8,6 +8,7 @@ import Driver from '../driver/driver.model';
 import { IUser } from '../user/user.interface';
 
 import User from '../user/user.model';
+
 const totalCount = async () => {
   const users = await User.countDocuments();
   const drivers = await Driver.countDocuments();
@@ -18,9 +19,10 @@ const totalCount = async () => {
   const newDrivers = await Driver.countDocuments({
     createdAt: { $gte: oneMonthAgo },
   });
+
   const newDriversDetails = await Driver.find({
     createdAt: { $gte: oneMonthAgo },
-  });
+  }); 
 
   return {
     users,
@@ -66,7 +68,7 @@ const getDriverGrowth = async (year?: number) => {
       {
         $sort: { month: 1 },
       },
-    ]);
+    ]); 
 
     const months = [
       'Jan',
@@ -105,6 +107,9 @@ const getDriverGrowth = async (year?: number) => {
     throw error;
   }
 };
+
+ 
+
 const getAllDriver = async (
   query: Record<string, unknown>,
 ): Promise<IGenericResponse<IDriver[]>> => {
@@ -123,6 +128,7 @@ const getAllDriver = async (
     data: result,
   };
 };
+
 const getAllUsers = async (
   query: Record<string, unknown>,
 ): Promise<IGenericResponse<IUser[]>> => {
@@ -142,9 +148,36 @@ const getAllUsers = async (
   };
 };
 
+
+// -------------------
+const getOverView = async()=>{
+
+}
+
+const getSerchUser = async (query: Record<string, unknown>): Promise<IGenericResponse<IDriver[]>> => {
+
+  const driverQuery = new QueryBuilder(Driver.find(), query)
+    .search(['name'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await driverQuery.modelQuery;
+  const meta = await driverQuery.countTotal();
+
+  return {
+    meta,
+    data: result,
+  };
+};
+ 
+
 export const DashboardService = {
   totalCount,
   getDriverGrowth,
   getAllDriver,
   getAllUsers,
+  getOverView,
+  getSerchUser
 };

@@ -21,7 +21,6 @@ class QueryBuilder<T> {
         ),
       });
     }
-
     return this;
   }
 
@@ -52,7 +51,6 @@ class QueryBuilder<T> {
     const skip = (page - 1) * limit;
 
     this.modelQuery = this.modelQuery.skip(skip).limit(limit);
-
     return this;
   }
 

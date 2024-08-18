@@ -6,16 +6,16 @@ const driverSchema = new Schema<IDriver>(
   {
     name: {
       type: String,
-      required: true,
+      required: false,
     },
     email: {
       type: String,
-      required: true,
-      unique: true,
+      required: false,
+      unique: false,
     },
     password: {
       type: String,
-      required: true,
+      required: false,
     },
 
     role: {
@@ -24,15 +24,15 @@ const driverSchema = new Schema<IDriver>(
     },
     phoneNumber: {
       type: String,
-      required: true,
+      required: false,
     },
     drivingLicenseNumber: {
       type: String,
-      required: true,
+      required: false,
     },
     drivingLicenseExpireDate: {
       type: Date,
-      required: true,
+      required: false,
     },
     profile_image: {
       type: String,
@@ -41,63 +41,63 @@ const driverSchema = new Schema<IDriver>(
     },
     licenseFrontImage: {
       type: String,
-      required: true,
+      required: false,
     },
     licenseBackImage: {
       type: String,
-      required: true,
+      required: false,
     },
     truckRegistrationNumber: {
       type: String,
-      required: true,
+      required: false,
     },
     truckDocumentImage: {
       type: String,
-      required: true,
+      required: false,
     },
     truckImage: {
       type: String,
-      required: true,
+      required: false,
     },
     truckSize: {
       type: String,
-      // required: true,
+      // required: false,
     },
     truckType: {
       type: String,
-      // required: true,
+      // required: false,
     },
     cargoCapacity: {
       type: String,
-      // required: true,
+      // required: false,
     },
     services: {
       type: [String],
-      required: true,
+      required: false,
     },
     kmForPrice: {
       type: String,
-      required: true,
+      required: false,
     },
     price: {
       type: String,
-      required: true,
+      required: false,
     },
     bankAccountNumber: {
       type: String,
-      required: true,
+      required: false,
     },
     bankName: {
       type: String,
-      required: true,
+      required: false,
     },
     routingNumber: {
       type: String,
-      required: true,
+      required: false,
     },
     accountHolderName: {
       type: String,
-      required: true,
+      required: false,
     },
     verifyCode: {
       type: String,
@@ -120,7 +120,7 @@ const driverSchema = new Schema<IDriver>(
   },
 
   {
-    timestamps: true,
+    timestamps: false,
   },
 );
 driverSchema.statics.isDriverExist = async function (

@@ -122,7 +122,7 @@ const checkIsValidForgetActivationCode = catchAsync(
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: 'Success!',
+      message: 'Success! ---',
       data: result,
     });
   },

@@ -15,4 +15,7 @@ router.get(
   FeedbackController.getFeedback,
 );
 router.post('/reply/:id', FeedbackController.addReplyToFeedback);
+
+router.delete('/delete/:id', FeedbackController.deleteFeedback);
+
 export const FeedbackRoutes = router;

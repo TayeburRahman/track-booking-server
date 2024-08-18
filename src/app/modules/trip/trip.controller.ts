@@ -23,6 +23,7 @@ const myTrip = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const usersTrip = catchAsync(async (req: Request, res: Response) => {
   const result = await TripService.usersTrip(req);
   sendResponse(res, {
@@ -32,6 +33,7 @@ const usersTrip = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const myTripRequests = catchAsync(async (req: Request, res: Response) => {
   const result = await TripService.myTripRequests(req);
   sendResponse(res, {
@@ -41,6 +43,7 @@ const myTripRequests = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const acceptTrip = catchAsync(async (req: Request, res: Response) => {
   const result = await TripService.acceptTrip(req);
   sendResponse(res, {
@@ -50,6 +53,7 @@ const acceptTrip = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const endTrip = catchAsync(async (req: Request, res: Response) => {
   const result = await TripService.endTrip(req);
   sendResponse(res, {
@@ -59,6 +63,7 @@ const endTrip = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const cancelTrip = catchAsync(async (req: Request, res: Response) => {
   const result = await TripService.cancelTrip(req);
   sendResponse(res, {
@@ -68,6 +73,7 @@ const cancelTrip = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const searchTrip = catchAsync(async (req: Request, res: Response) => {
   const result = await TripService.searchTrip();
   sendResponse(res, {
@@ -77,6 +83,7 @@ const searchTrip = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const searchTripDetails = catchAsync(async (req: Request, res: Response) => {
   const result = await TripService.searchTripDetails(req.params.id);
   sendResponse(res, {
@@ -86,6 +93,7 @@ const searchTripDetails = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 export const TripController = {
   insertIntoDB,
   myTrip,

@@ -21,6 +21,7 @@ const insertIntoDB = async (req: Request) => {
     ...tripData,
     user: userId,
   });
+
   if (result) {
     const notificationMessage = `You have a new trip request from ${tripData.pickup} to ${tripData.to}.`;
     const notification = await Notification.create({
@@ -103,17 +104,20 @@ const myTrip = async (req: Request) => {
     return await Trip.find({ driver: userId });
   }
 };
+
 const usersTrip = async (req: Request) => {
   const { userId } = req.user as IReqUser;
 
   return await Trip.findOne({ user: userId }).sort({ createdAt: -1 }).limit(1);
 };
+
 const myTripRequests = async (req: Request) => {
   const { userId } = req.user as IReqUser;
   return await Trip.find({
     $and: [{ driver: userId }, { acceptStatus: 'pending' }],
   });
 };
+
 const acceptTrip = async (req: Request) => {
   const { id } = req.params;
   const isExistTrip = await Trip.findById(id);
@@ -132,6 +136,7 @@ const acceptTrip = async (req: Request) => {
     },
   );
 };
+
 const endTrip = async (req: Request) => {
   const { id } = req.params;
   const isExistTrip = await Trip.findById(id);
@@ -157,6 +162,7 @@ const endTrip = async (req: Request) => {
   }
   return result;
 };
+
 const cancelTrip = async (req: Request) => {
   const { id } = req.params;
   const isExistTrip = await Trip.findById(id);
@@ -175,6 +181,7 @@ const cancelTrip = async (req: Request) => {
     },
   );
 };
+
 const searchTrip = async () => {
   // Step 1: Get average ratings for each driver
   const result = await Ratting.aggregate([

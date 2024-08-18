@@ -109,6 +109,7 @@ const activateUser = async (payload: IActivationRequest) => {
     config.jwt.secret as Secret,
     config.jwt.expires_in as string,
   );
+  
   //Create refresh token
   const refreshToken = jwtHelpers.createToken(
     { userId: existUser._id, role: existUser.role },

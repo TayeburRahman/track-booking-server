@@ -37,6 +37,7 @@ const createUser: RequestHandler = catchAsync(
     });
   },
 );
+
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const result = await AdminService.getAllUsers(req.query);
   sendResponse<IUser[]>(res, {

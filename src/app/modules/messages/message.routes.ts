@@ -10,7 +10,6 @@ const router = express.Router();
 
 router.post(
   '/send-message/:id',
-
   auth(ENUM_USER_ROLE.USER, ENUM_USER_ROLE.DRIVER),
   validateRequest(MessageValidation.messages),
   messageController.sendMessage,

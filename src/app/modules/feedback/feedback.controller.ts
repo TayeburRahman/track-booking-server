@@ -12,6 +12,7 @@ const sendFeedBack = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const getFeedback = catchAsync(async (req: Request, res: Response) => {
   const result = await FeedBackService.getFeedback(req.query);
   sendResponse(res, {
@@ -21,6 +22,8 @@ const getFeedback = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
+// ---------
 const addReplyToFeedback = catchAsync(async (req: Request, res: Response) => {
   const result = await FeedBackService.addReplyToFeedback(req);
   sendResponse(res, {
@@ -31,8 +34,18 @@ const addReplyToFeedback = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const deleteFeedback = catchAsync(async (req: Request, res: Response) => {
+  const {message, success} = await FeedBackService.deleteFeedback(req); 
+  sendResponse(res, {
+    statusCode: 200,
+    success,
+    message
+  });
+});
+
 export const FeedbackController = {
   addReplyToFeedback,
   sendFeedBack,
   getFeedback,
+  deleteFeedback
 };

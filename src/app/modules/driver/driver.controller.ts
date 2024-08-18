@@ -11,6 +11,8 @@ import { ILoginUserResponse } from '../auth/auth.interface';
 
 const registerDriver: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
+    console.log("update", req)
+    
     await DriverService.registerDriver(req as any);
 
     sendResponse(res, {
@@ -20,6 +22,7 @@ const registerDriver: RequestHandler = catchAsync(
     });
   },
 );
+
 const activateDriver: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const result = await DriverService.activateDriver(req.body);
@@ -51,6 +54,7 @@ const getAllDriver = catchAsync(async (req: Request, res: Response) => {
     meta: result.meta,
   });
 });
+
 const getSingleDriver = catchAsync(async (req: Request, res: Response) => {
   const result = await DriverService.getSingleDriver(req.user as IReqUser);
   sendResponse<IDriver>(res, {
@@ -72,6 +76,7 @@ const deleteDriver = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const loginDriver = catchAsync(async (req: Request, res: Response) => {
   const { ...loginData } = req.body;
   const result = await DriverService.loginDriver(loginData);
@@ -101,6 +106,7 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
     message: 'Password change successfully !',
   });
 });
+
 const updateProfile = catchAsync(async (req: Request, res: Response) => {
   const result = await DriverService.updateProfile(req as any);
   sendResponse(res, {
@@ -110,6 +116,7 @@ const updateProfile = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const forgotPass = catchAsync(async (req: Request, res: Response) => {
   await DriverService.forgotPass(req.body);
   sendResponse(res, {
@@ -118,6 +125,7 @@ const forgotPass = catchAsync(async (req: Request, res: Response) => {
     message: 'Check your email!',
   });
 });
+
 const checkIsValidForgetActivationCode = catchAsync(
   async (req: Request, res: Response) => {
     const result = await DriverService.checkIsValidForgetActivationCode(
@@ -155,6 +163,7 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
     message: 'Account recovered!',
   });
 });
+
 const deleteMyAccount = catchAsync(async (req: Request, res: Response) => {
   await DriverService.deleteMyAccount(req.body);
   sendResponse(res, {

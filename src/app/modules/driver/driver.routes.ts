@@ -15,6 +15,7 @@ router.post(
   validateRequest(DriverValidation.createDriverSchema),
   DriverController.registerDriver,
 );
+
 router.post('/activate-driver', DriverController.activateDriver);
 router.post(
   '/login',

@@ -7,6 +7,7 @@ import sendEmail from '../../../utils/sendEmail';
 import { feedbackReplyEmailBody } from './feedback.email-template';
 import { IReqUser } from '../user/user.interface';
 import { logger } from '../../../shared/logger';
+import mongoose from 'mongoose';
 
 const sendFeedBack = async (req: Request) => {
   const payload = req.body;
@@ -23,6 +24,7 @@ const sendFeedBack = async (req: Request) => {
   };
   return await FeedBack.create(data);
 };
+
 const getFeedback = async (query: Record<string, unknown>) => {
   const FeedBackQuery = new QueryBuilder(FeedBack.find({}), query)
     .search(['title', 'description'])
@@ -39,6 +41,7 @@ const getFeedback = async (query: Record<string, unknown>) => {
     data: result,
   };
 };
+
 const addReplyToFeedback = async (req: Request) => {
   const { id } = req.params;
   const { text } = req.body;
@@ -64,9 +67,27 @@ const addReplyToFeedback = async (req: Request) => {
   });
   return feedback;
 };
+ 
+const deleteFeedback = async (req: Request) => {
+  const { id } = req.params;  
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new Error('Invalid ID format');
+  }
+
+  const result = await FeedBack.findOneAndDelete({_id: id}) 
+
+  if (!result) {
+    return { message: 'Feedback not found', success: false };
+  } 
+
+  return { message: 'Feedback deleted successfully', success: true };
+
+};
 
 export const FeedBackService = {
   sendFeedBack,
   getFeedback,
   addReplyToFeedback,
+  deleteFeedback
 };
