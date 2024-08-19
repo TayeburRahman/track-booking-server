@@ -26,7 +26,7 @@ const globalErrorHandler: ErrorRequestHandler = (
     : console.error('globalErrorHandler', error);
 
   let statusCode = 500;
-  let message = 'Something went wrong !';
+  let message = 'Something went wrong!';
   let errorMessages: IGenericErrorMessage[] = [];
 
   if (error?.name === 'ValidationError') {

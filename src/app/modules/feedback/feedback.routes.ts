@@ -14,8 +14,8 @@ router.get(
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
   FeedbackController.getFeedback,
 );
+// --------------------
 router.post('/reply/:id', FeedbackController.addReplyToFeedback);
-
 router.delete('/delete/:id', FeedbackController.deleteFeedback);
 
 export const FeedbackRoutes = router;

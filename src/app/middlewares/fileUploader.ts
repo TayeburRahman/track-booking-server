@@ -8,8 +8,6 @@ export const uploadFile = () => {
     destination: function (req, file, cb) {
       let uploadPath = '';
 
-      console.log("file", file)
-
       if (
         file.fieldname === 'licenseFrontImage' ||
         file.fieldname === 'licenseBackImage'
@@ -32,7 +30,6 @@ export const uploadFile = () => {
       if (!fs.existsSync(uploadPath)) {
         fs.mkdirSync(uploadPath, { recursive: true });
       }
-
 
       if (
         file.mimetype === 'image/jpeg' ||
@@ -64,8 +61,10 @@ export const uploadFile = () => {
     ];
 
     if (file.fieldname === undefined) {
+
       // Allow requests without any files
       cb(null, true);
+      
     } else if (allowedFieldnames.includes(file.fieldname)) {
       if (
         file.mimetype === 'image/jpeg' ||

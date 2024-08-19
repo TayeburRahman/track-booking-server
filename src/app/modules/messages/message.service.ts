@@ -10,31 +10,34 @@ import Driver from '../driver/driver.model';
 const sendMessage = async (req: Request) => {
   const { id: receiverId } = req.params;
   const senderId = req.user?.userId;
-  const data = req.body;
-
-  console.log("senderId", senderId, receiverId)
+  const data = req.body; 
 
   const { message } = data;
+
+  // console.log("meassage", message)
 
   if (receiverId === null || senderId === null) {
     throw new ApiError(404, 'Sender or Receiver user not found');
   }
-
+ 
   let conversation = await Conversation.findOne({
     participants: { $all: [senderId, receiverId] },
   });
 
-  if (!conversation) {
+  // console.log("conversation", conversation)
+   
+  if(!conversation) { 
     conversation = await Conversation.create({
       participants: [senderId, receiverId],
     });
-
     const newMessage = new Message({
       senderId,
       receiverId,
       message,
       conversationId: conversation._id,
     });
+
+    // console.log("newMessage", newMessage)
 
     if (newMessage) {
       conversation.messages.push(newMessage._id);
@@ -50,6 +53,7 @@ const sendMessage = async (req: Request) => {
 
     return newMessage;
   }
+  
 };
 
 //*

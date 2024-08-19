@@ -154,6 +154,7 @@ const resendActivationCode: RequestHandler = catchAsync(
     });
   },
 );
+
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
   // const token = req.headers.authorization || '';
   await DriverService.resetPassword(req.body);
@@ -173,16 +174,7 @@ const deleteMyAccount = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const blockDriver = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id;
-  const result = await DriverService.blockDriver(id);
-  sendResponse<IDriver>(res, {
-    statusCode: 200,
-    success: true,
-    message: 'Driver Blocked successfully',
-    data: result,
-  });
-});
+ 
 
 export const DriverController = {
   getAllDriver,
@@ -197,6 +189,5 @@ export const DriverController = {
   activateDriver,
   deleteMyAccount,
   checkIsValidForgetActivationCode,
-  resendActivationCode,
-  blockDriver,
+  resendActivationCode, 
 };

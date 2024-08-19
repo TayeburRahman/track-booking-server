@@ -108,11 +108,10 @@ const getDriverGrowth = async (year?: number) => {
   }
 };
 
- 
-
 const getAllDriver = async (
   query: Record<string, unknown>,
 ): Promise<IGenericResponse<IDriver[]>> => {
+  console.log("query", query)
   const driverQuery = new QueryBuilder(Driver.find(), query)
     .search(['name'])
     .filter()
@@ -148,30 +147,39 @@ const getAllUsers = async (
   };
 };
 
-
 // -------------------
 const getOverView = async()=>{
 
 }
 
-const getSerchUser = async (query: Record<string, unknown>): Promise<IGenericResponse<IDriver[]>> => {
-
-  const driverQuery = new QueryBuilder(Driver.find(), query)
-    .search(['name'])
-    .filter()
-    .sort()
-    .paginate()
-    .fields();
-
-  const result = await driverQuery.modelQuery;
-  const meta = await driverQuery.countTotal();
-
+const getSerchUser = async (name: string) => {
+  const result = await User.find({ name: { $regex: new RegExp(name, 'i') } });
   return {
-    meta,
     data: result,
   };
 };
- 
+
+
+const getSerchDriver = async (name: string) => {
+  const result = await Driver.find({ name: { $regex: new RegExp(name, 'i') } });
+  return {
+    data: result,
+  };
+};
+
+const deleteDriver = async (id: string) => {
+  const result = await Driver.deleteOne({_id: id});
+  return {
+    data: result,
+  };
+};
+
+const deleteUser = async (id: string) => {
+  const result = await User.deleteOne({_id: id});
+  return {
+    data: result,
+  };
+};
 
 export const DashboardService = {
   totalCount,
@@ -179,5 +187,8 @@ export const DashboardService = {
   getAllDriver,
   getAllUsers,
   getOverView,
-  getSerchUser
+  getSerchUser,
+  getSerchDriver,
+  deleteDriver,
+  deleteUser
 };

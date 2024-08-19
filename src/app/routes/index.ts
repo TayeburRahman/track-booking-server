@@ -29,7 +29,6 @@ const moduleRoutes = [
     path: '/subscriptions',
     route: SubscriptionRoutes,
   },
-
   {
     path: '/auth',
     route: AuthRoutes,

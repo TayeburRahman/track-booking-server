@@ -4,6 +4,8 @@ import { DashboardService } from './dashboard.service';
 import sendResponse from '../../../shared/sendResponse';
 import { IDriver } from '../driver/driver.interface';
 import { IUser } from '../user/user.interface';
+import ApiError from '../../../errors/ApiError';
+import httpStatus from 'http-status';
 
 const totalCount = catchAsync(async (req: Request, res: Response) => {
   const result = await DashboardService.totalCount();
@@ -27,6 +29,7 @@ const getDriverGrowth = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const getAllDriver = catchAsync(async (req: Request, res: Response) => {
   const result = await DashboardService.getAllDriver(req.query);
   sendResponse<IDriver[]>(res, {
@@ -61,9 +64,34 @@ const getOverView = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getSerchUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await DashboardService.getSerchUser(req.query);
+const searchByUserName = catchAsync(async (req: Request, res: Response) => {
+  const { name } = req.query;  
+  if (typeof name !== 'string') {
+    return res.status(400).json({ error: 'Invalid query parameter' });
+  }
+  const result = await DashboardService.getSerchUser(name); 
+  res.status(200).json(result);
+})
 
+const searchByDriverName = catchAsync(async (req: Request, res: Response) => {
+  const { name } = req.query;  
+  if (typeof name !== 'string') {
+    return res.status(400).json({ error: 'Invalid query parameter' });
+  }
+  const result = await DashboardService.getSerchDriver(name); 
+  res.status(200).json(result);
+})
+
+const deleteDriverById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;    
+  const result = await DashboardService.deleteDriver(id); 
+  res.status(200).json(result);
+})
+
+const deleteUserById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await DashboardService.deleteDriver(id);
+  res.status(200).json(result);
 })
 
 export const DashboardController = {
@@ -71,6 +99,9 @@ export const DashboardController = {
   getDriverGrowth,
   getAllDriver,
   getAllUsers,
-  getOverView,
-  getSerchUser
+  getOverView, 
+  searchByUserName,
+  searchByDriverName,
+  deleteDriverById,
+  deleteUserById
 };

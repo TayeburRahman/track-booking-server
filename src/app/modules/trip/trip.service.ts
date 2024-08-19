@@ -43,6 +43,7 @@ const insertIntoDB = async (req: Request) => {
     };
   }
 };
+
 // const insertIntoDB = async (
 //   req: Request,
 //   res: Response,
@@ -166,12 +167,15 @@ const endTrip = async (req: Request) => {
 const cancelTrip = async (req: Request) => {
   const { id } = req.params;
   const isExistTrip = await Trip.findById(id);
+ 
   if (!isExistTrip) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Trip not found');
   }
+
   if (isExistTrip.acceptStatus === 'cancel') {
     throw new ApiError(httpStatus.CONFLICT, 'Already canceled');
   }
+  
   return await Trip.findByIdAndUpdate(
     id,
     { acceptStatus: 'cancel' },
@@ -207,6 +211,7 @@ const searchTrip = async () => {
     const driverRating =
       formattedResult.find(rat => rat.driver === driver._id.toString())
         ?.averageRating || 0;
+
     return {
       id: driver._id,
       trackImage: driver.truckImage,
@@ -234,6 +239,7 @@ const searchTripDetails = async (id: string) => {
   };
   return formattedData;
 };
+
 export const TripService = {
   insertIntoDB,
   myTrip,

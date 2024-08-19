@@ -34,14 +34,25 @@ router.get(
 router.get(
   '/search-user',
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
-  DashboardController.getOverView,
+  DashboardController.searchByUserName
 );
 
 router.get(
   '/search-driver',
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
-  DashboardController.getOverView,
+  DashboardController.searchByDriverName,
 );
 
+router.delete(
+  '/driver/:id',
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
+  DashboardController.deleteDriverById,
+);
+
+router.delete(
+  '/driver/:id',
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
+  DashboardController.deleteUserById,
+);
 
 export const DashboardRoutes = router;
