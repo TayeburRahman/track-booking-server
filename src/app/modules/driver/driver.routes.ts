@@ -75,7 +75,7 @@ router.get(
   DriverController.truckLocation,
 );
 
-router.get(
+router.post(
   '/get/search-location', 
   DriverController.getDriversSortedByDistance,
 );
