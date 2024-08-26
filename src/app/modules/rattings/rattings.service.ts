@@ -14,12 +14,14 @@ const insertIntoDB = async (req: Request) => {
   if (!isExistUser) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
+  
   return await Ratting.create({
     user: userId,
     driver,
     ratting,
   });
 };
+
 const averageRattingForDriver = async (req: Request) => {
   const { id } = req.params;
   const driverObjectId = new Types.ObjectId(id);

@@ -31,6 +31,7 @@ const getNotifications = async (query: Record<string, unknown>) => {
     data: result,
   };
 };
+
 //Update
 const updateNotification = async (req: Request) => {
   const notification = await Notification.findById(req.params.id);
@@ -46,6 +47,7 @@ const updateNotification = async (req: Request) => {
   });
   return notifications;
 };
+
 const updateAll = async () => {
   const result = await Notification.updateMany(
     { status: false },
@@ -77,6 +79,7 @@ const myNotification = async (
     data: result,
   };
 };
+
 export const NotificationService = {
   getNotifications,
   updateNotification,

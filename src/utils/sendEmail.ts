@@ -13,8 +13,8 @@ const sendEmail = async (options: IEmailOptions): Promise<void> => {
       pass: config.smtp.smtp_password,
     },
   });
-  const { email, subject, html } = options;
 
+  const { email, subject, html } = options;
   // console.log("hello", email, subject)
 
   const mailOptions = {
@@ -25,6 +25,7 @@ const sendEmail = async (options: IEmailOptions): Promise<void> => {
     subject,
     html,
   };
+  
   await transporter.sendMail(mailOptions);
 };
 

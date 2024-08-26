@@ -9,6 +9,7 @@ import { ILoginUserResponse } from '../auth/auth.interface';
 
 const registrationUser: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
+    console.log("add", req.body )
     await UserService.registrationUser(req.body);
 
     sendResponse(res, {
@@ -144,7 +145,7 @@ const resendActivationCode: RequestHandler = catchAsync(
 );
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
   // const token = req.headers.authorization || '';
-  await UserService.resetPassword(req.body);
+  await UserService.resetPassword(req);
   sendResponse(res, {
     statusCode: 200,
     success: true,

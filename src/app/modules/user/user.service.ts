@@ -420,16 +420,13 @@ const checkIsValidForgetActivationCode = async (payload: {
   return { valid: true };
 };
 //!
-const resetPassword = async (payload: {
-  email: string;
-  newPassword: string;
-  confirmPassword: string;
-}) => {
-  const { email, newPassword, confirmPassword } = payload;
+const resetPassword = async (req: Request) => {
+  const {userId} = req.user  as IReqUser
+  const {  newPassword, confirmPassword } = req.body;
   if (newPassword !== confirmPassword) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Password didn't match");
   }
-  const user = await User.findOne({ email }, { _id: 1 });
+  const user = await User.findOne({ _id:userId }, { _id: 1 });
 
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User not found!');
@@ -442,7 +439,7 @@ const resetPassword = async (payload: {
     Number(config.bcrypt_salt_rounds),
   );
 
-  await User.updateOne({ email }, { password }, { new: true });
+  await User.updateOne({_id: userId }, { password }, { new: true });
   user.verifyCode = null;
   user.verifyExpire = null;
   await user.save();

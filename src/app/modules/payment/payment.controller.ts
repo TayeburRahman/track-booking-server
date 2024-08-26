@@ -12,6 +12,7 @@ const makePaymentIntent = catchAsync(async (req: Request, res: Response) => {
     message: 'Payment intent create successfully',
     data: result,
   });
+  
 });
 
 export const PaymentController = {

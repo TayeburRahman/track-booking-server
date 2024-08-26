@@ -30,12 +30,14 @@ const insertIntoDB = async (req: Request) => {
       user: userId,
       message: notificationMessage,
     });
+
     //@ts-ignore
     const socketIo = global.io;
     if (socketIo) {
       socketIo.emit(`notification::${tripData?.driver}`, notification);
       socketIo.emit(`trips::${tripData?.driver}`, result);
     }
+
     return result;
   } else {
     return {
@@ -94,6 +96,7 @@ const insertIntoDB = async (req: Request) => {
 // };
 
 const myTrip = async (req: Request) => {
+
   const { userId } = req.user as IReqUser;
   const query = req.query as Record<string, unknown>;
 

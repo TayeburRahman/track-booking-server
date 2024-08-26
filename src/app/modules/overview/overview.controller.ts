@@ -12,6 +12,7 @@ const totalUserAndEarning = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const Analytics = catchAsync(async (req: Request, res: Response) => {
   const result = await DashboardOverviewService.Analytics();
   sendResponse(res, {
@@ -21,18 +22,19 @@ const Analytics = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-const purchasedPackageList = catchAsync(async (req: Request, res: Response) => {
-  const result = await DashboardOverviewService.purchasedPackageList(req.query);
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: 'Success',
-    data: result,
-  });
-});
+
+// const purchasedPackageList = catchAsync(async (req: Request, res: Response) => {
+//   const result = await DashboardOverviewService.purchasedPackageList(req.query);
+//   sendResponse(res, {
+//     statusCode: 200,
+//     success: true,
+//     message: 'Success',
+//     data: result,
+//   });
+// });
 
 export const DashboardOverviewController = {
   totalUserAndEarning,
   Analytics,
-  purchasedPackageList,
+  // purchasedPackageList,
 };

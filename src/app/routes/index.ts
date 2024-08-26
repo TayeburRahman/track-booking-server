@@ -1,12 +1,11 @@
 import express from 'express';
 import { ManageRoutes } from '../modules/manage-web/manage.routes';
-import { SubscriptionPlanRoutes } from '../modules/subscriptions-plan/subscriptions-plan.routes';
+// import { SubscriptionPlanRoutes } from '../modules/subscriptions-plan/subscriptions-plan.routes';
 import { MessageRoutes } from '../modules/messages/message.routes';
-import { SubscriptionRoutes } from '../modules/subscriptions/subscriptions.routes';
+// import { SubscriptionRoutes } from '../modules/subscriptions/subscriptions.routes';
 import { AuthRoutes } from '../modules/auth/auth.routes';
 import { NotificationRoutes } from '../modules/notifications/notifications.routes';
 import { DashboardOverviewRoutes } from '../modules/overview/overview.routes';
-
 import { FeedbackRoutes } from '../modules/feedback/feedback.routes';
 import { PaymentRoutes } from '../modules/payment/payment.routes';
 import { DriverRoutes } from '../modules/driver/driver.routes';
@@ -21,14 +20,14 @@ const moduleRoutes = [
     path: '/manage',
     route: ManageRoutes,
   },
-  {
-    path: '/subscription-plan',
-    route: SubscriptionPlanRoutes,
-  },
-  {
-    path: '/subscriptions',
-    route: SubscriptionRoutes,
-  },
+  // {
+  //   path: '/subscription-plan',
+  //   route: SubscriptionPlanRoutes,
+  // },
+  // {
+  //   path: '/subscriptions',
+  //   route: SubscriptionRoutes,
+  // },
   {
     path: '/auth',
     route: AuthRoutes,

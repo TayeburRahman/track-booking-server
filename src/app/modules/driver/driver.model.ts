@@ -1,7 +1,24 @@
 import mongoose, { Schema } from 'mongoose';
-import { DriverModel, IDriver } from './driver.interface';
+import { DriverModel, IDriver, Ilocation } from './driver.interface';
 import config from '../../../config';
 import bcrypt from 'bcrypt';
+
+
+const locationSchema = new Schema<Ilocation>({ 
+  latitude: {
+    type: Number,
+    required: true,
+  },
+  longitude: {
+    type: Number,
+    required: true,
+  }, 
+  address: {
+    type: String,
+    required: true,
+  },
+}); 
+
 const driverSchema = new Schema<IDriver>(
   {
     name: {
@@ -17,7 +34,6 @@ const driverSchema = new Schema<IDriver>(
       type: String,
       required: false,
     },
-
     role: {
       type: String,
       default: 'DRIVER',
@@ -117,8 +133,10 @@ const driverSchema = new Schema<IDriver>(
       type: Boolean,
       default: false,
     },
+    location: {
+      type: locationSchema, 
+    },
   },
-
   {
     timestamps: false,
   },

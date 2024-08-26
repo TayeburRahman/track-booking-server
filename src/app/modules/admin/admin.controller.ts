@@ -48,6 +48,7 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
     meta: result.meta,
   });
 });
+
 const getSingleUser = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await AdminService.getSingleUser(id);
@@ -58,6 +59,7 @@ const getSingleUser = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const updateAdmin = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await AdminService.updateAdmin(id, req as any);
@@ -68,6 +70,7 @@ const updateAdmin = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const deleteUser = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await AdminService.deleteUser(id);
@@ -78,6 +81,7 @@ const deleteUser = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const login = catchAsync(async (req: Request, res: Response) => {
   const { ...loginData } = req.body;
   const result = await AdminService.login(loginData);
@@ -171,6 +175,7 @@ const deleteAdmin = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const checkIsValidForgetActivationCode = catchAsync(
   async (req: Request, res: Response) => {
     const result = await AdminService.checkIsValidForgetActivationCode(

@@ -25,6 +25,7 @@ export const logger = createLogger({
       level: 'info',
       filename: path.join(logDir, 'successes', 'um-success.log'),
     }),
+    
     new DailyRotateFile({
       level: 'info',
       filename: path.join(logDir, 'successes', 'um-%DATE%-success.log'),

@@ -16,6 +16,7 @@ const getNotifications: RequestHandler = catchAsync(
     });
   },
 );
+
 //update notification only for admin
 const updateNotification: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
@@ -28,6 +29,7 @@ const updateNotification: RequestHandler = catchAsync(
     });
   },
 );
+
 const updateAll: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const result = await NotificationService.updateAll();
@@ -39,6 +41,7 @@ const updateAll: RequestHandler = catchAsync(
     });
   },
 );
+
 const myNotification: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const result = await NotificationService.myNotification(

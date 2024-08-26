@@ -4,7 +4,10 @@ import config from '../../../config';
 const stripe = new Stripe(config.stripe.stripe_secret_key as string);
 
 const makePaymentIntent = async (payload: { price: any }) => {
+
   const amount = Math.trunc(payload.price * 100);
+
+  // console.log("req", req.body)
 
   const paymentIntent = await stripe.paymentIntents.create({
     amount,

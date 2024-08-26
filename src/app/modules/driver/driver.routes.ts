@@ -17,11 +17,13 @@ router.post(
 );
 
 router.post('/activate-driver', DriverController.activateDriver);
+
 router.post(
   '/login',
   validateRequest(DriverValidation.loginDriverSchema),
   DriverController.loginDriver,
 );
+
 router.post(
   '/delete-account',
   auth(ENUM_USER_ROLE.DRIVER),
@@ -56,5 +58,29 @@ router.patch(
   uploadFile(),
   DriverController.updateProfile,
 );
+
+router.get(
+  '/truck/location', 
+  auth(ENUM_USER_ROLE.DRIVER, ENUM_USER_ROLE.USER, ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
+  DriverController.allTruckLocation,
+);
+
+router.patch(
+  '/:id/location', 
+  DriverController.truckLocationUpdate,
+);
+
+router.get(
+  '/:id/location', 
+  DriverController.truckLocation,
+);
+
+router.get(
+  '/get/search-location', 
+  DriverController.getDriversSortedByDistance,
+);
+ 
+
+ 
 
 export const DriverRoutes = router;

@@ -93,6 +93,7 @@ const deleteUserById = catchAsync(async (req: Request, res: Response) => {
   const result = await DashboardService.deleteDriver(id);
   res.status(200).json(result);
 })
+ 
 
 export const DashboardController = {
   totalCount,

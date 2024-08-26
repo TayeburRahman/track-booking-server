@@ -24,7 +24,6 @@ const auth =
 
       if (tokenWithBearer && tokenWithBearer.startsWith('Bearer')) {
         const token = tokenWithBearer.split(' ')[1];
-
         //verify token
         const verifyUser = jwtHelpers.verifyToken(
           token,

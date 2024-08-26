@@ -19,10 +19,12 @@ import { registrationSuccessEmailBody } from '../../../mails/user.register';
 import { ENUM_USER_ROLE } from '../../../enums/user';
 import { sendResetEmail } from '../auth/sendResetMails';
 import { logger } from '../../../shared/logger';
-import { IActivationRequest, IDriver } from './driver.interface';
+import { IActivationRequest, IDriver, Ilocation } from './driver.interface';
 import Driver from './driver.model';
 import { IReqUser } from '../user/user.interface';
 import { CustomRequest } from '../../../interfaces/common';
+import { error } from 'winston';
+import { haversineDistance } from './driver.help';
 
 //!
 const registerDriver = async (req: CustomRequest) => {
@@ -44,6 +46,7 @@ const registerDriver = async (req: CustomRequest) => {
       "Password and Confirm Password Didn't Match",
     );
   }
+
   if (files) {
     if (files.licenseFrontImage) {
       payload.licenseFrontImage = `/images/licenses/${files.licenseFrontImage[0].filename}`;
@@ -58,6 +61,7 @@ const registerDriver = async (req: CustomRequest) => {
       payload.truckImage = `/images/trucks/${files.truckImage[0].filename}`;
     }
   }
+
   const activationToken = createActivationToken();
   const activationCode = activationToken.activationCode;
   const data = { user: { name: name }, activationCode };
@@ -74,8 +78,10 @@ const registerDriver = async (req: CustomRequest) => {
   payload.activationCode = activationCode;
   return await Driver.create(payload);
 };
+
 //!
 const updateProfile = async (req: CustomRequest): Promise<IDriver | null> => {
+
   const { files } = req;
   const { userId } = req.user as IReqUser;
   //@ts-ignore
@@ -122,10 +128,10 @@ const updateProfile = async (req: CustomRequest): Promise<IDriver | null> => {
   );
   return result;
 };
+
 //!
 const createActivationToken = () => {
   const activationCode = Math.floor(100000 + Math.random() * 900000).toString();
-
   return { activationCode };
 };
 
@@ -135,7 +141,7 @@ const activateDriver = async (payload: { code: string; email: string }) => {
 
   const existUser = await Driver.findOne({ email: email });
   if (!existUser) {
-    throw new ApiError(400, 'Driver not found');
+    throw new ApiError(400, 'Driver not found!');
   }
   if (existUser.activationCode !== code) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Code didn't match");
@@ -184,6 +190,7 @@ cron.schedule('* * * * *', async () => {
     logger.error('Error deleting expired users:', error);
   }
 });
+
 //!
 const getAllDriver = async (
   query: Record<string, unknown>,
@@ -202,8 +209,7 @@ const getAllDriver = async (
     meta,
     data: result,
   };
-};
-//!
+}; 
 
 //!
 const getSingleDriver = async (user: IReqUser) => {
@@ -221,6 +227,7 @@ const deleteDriver = async (id: string): Promise<IDriver | null> => {
 
   return result;
 };
+
 //!
 const loginDriver = async (payload: ILoginUser) => {
   const { email, password } = payload;
@@ -263,6 +270,7 @@ const loginDriver = async (payload: ILoginUser) => {
     refreshToken,
   };
 };
+
 //!
 const deleteMyAccount = async (payload: {
   email: string;
@@ -356,6 +364,7 @@ const forgotPass = async (payload: { email: string }) => {
   `,
   );
 };
+
 //!
 const resendActivationCode = async (payload: { email: string }) => {
   const email = payload.email;
@@ -383,7 +392,6 @@ const resendActivationCode = async (payload: { email: string }) => {
   user.verifyCode = activationCode;
   user.verifyExpire = expiryTime;
   await user.save();
-
   sendResetEmail(
     profile.email,
     `
@@ -396,11 +404,13 @@ const resendActivationCode = async (payload: { email: string }) => {
   `,
   );
 };
+
 //!
 const forgetActivationCode = () => {
   const activationCode = Math.floor(100000 + Math.random() * 900000).toString();
   return activationCode;
 };
+
 //!
 const checkIsValidForgetActivationCode = async (payload: {
   code: string;
@@ -423,6 +433,7 @@ const checkIsValidForgetActivationCode = async (payload: {
 
   return { valid: true };
 };
+
 //!
 const resetPassword = async (payload: {
   email: string;
@@ -466,6 +477,72 @@ const blockDriver = async (id: string): Promise<IDriver | null> => {
   return result;
 };
 
+const truckLocationUpdate = async (req: Request): Promise<IDriver | null> => {
+  const { id } = req.params;
+  const { latitude, longitude, address}: Ilocation = req.body;
+
+  if (!id || latitude === undefined || longitude === undefined || address === undefined) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid request parameters');
+  }
+
+  console.log("address",address)
+
+  const updatedDriver = await Driver.findByIdAndUpdate(
+    id,
+    {
+      $set: { 'location': { latitude, longitude, address } }
+    },
+    { new: true }
+  );
+
+  return updatedDriver;
+};
+
+const truckLocation = async (id: string): Promise<IDriver | null> => {
+  const result = await Driver.findById(id)     
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'No Driver Found');
+  } 
+  return result;
+};
+
+const allTruckLocation = async () => {
+
+  const drivers = await Driver.find()
+    .select('_id name phoneNumber profile_image location')
+    .exec();
+
+  if (!drivers.length) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'No Driver Found');
+  } 
+
+  return drivers;
+};
+
+const getDriversSortedByDistance = async (req: Request): Promise<IDriver[]> => {
+  const { latitude, longitude, maxDistance } = req.body;
+
+  console.log("latitude, longitude, maxDistance", latitude, longitude, maxDistance);
+
+  // Fetch all drivers from the database
+  const allDrivers = await Driver.find({});
+
+  // Calculate distance and filter drivers
+  const driversWithDistance = allDrivers
+    .map(driver => {
+      const driverLat: any = driver.location.latitude;
+      const driverLon: any = driver.location.longitude;
+      const distance = haversineDistance(latitude, longitude, driverLat, driverLon);
+      
+      return { ...driver.toObject(), distance };
+    })
+    .filter(driver => driver.distance <= maxDistance)
+    .sort((a, b) => a.distance - b.distance);
+
+  return driversWithDistance;
+};
+
+
 export const DriverService = {
   getAllDriver,
   getSingleDriver,
@@ -481,4 +558,8 @@ export const DriverService = {
   checkIsValidForgetActivationCode,
   resendActivationCode,
   blockDriver,
+  truckLocation,
+  truckLocationUpdate,
+  allTruckLocation,
+  getDriversSortedByDistance
 };

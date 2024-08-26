@@ -86,6 +86,7 @@ const searchTrip = catchAsync(async (req: Request, res: Response) => {
 
 const searchTripDetails = catchAsync(async (req: Request, res: Response) => {
   const result = await TripService.searchTripDetails(req.params.id);
+  
   sendResponse(res, {
     statusCode: 200,
     success: true,

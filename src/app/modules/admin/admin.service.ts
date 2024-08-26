@@ -58,11 +58,13 @@ const registrationUser = async (payload: IRegistration) => {
 
   return userWithoutPassword;
 };
+
 //!
 const createUser = async (userData: IUser): Promise<IUser | null> => {
   const newUser = await User.create(userData);
   return newUser;
 };
+
 //!
 const getAllUsers = async (
   query: Record<string, unknown>,
@@ -82,6 +84,7 @@ const getAllUsers = async (
     data: result,
   };
 };
+
 //!
 const getSingleUser = async (id: string): Promise<IUser | null> => {
   const result = await User.findById(id);
@@ -90,10 +93,12 @@ const getSingleUser = async (id: string): Promise<IUser | null> => {
   }
   return result;
 };
+
 const getAllAdmin = async () => {
   const results = await Admin.find({}).lean();
   return results;
 };
+
 //!
 const updateAdmin = async (
   id: string,
@@ -135,6 +140,7 @@ const updateAdmin = async (
   );
   return result;
 };
+
 //!
 const deleteUser = async (id: string): Promise<IUser | null> => {
   const result = await User.findByIdAndDelete(id);
@@ -179,6 +185,7 @@ const login = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
     //@ts-ignore
   };
 };
+
 //!
 const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
   //verify token
@@ -216,6 +223,7 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
     accessToken: newAccessToken,
   };
 };
+
 //!
 const changePassword = async (
   user: IReqUser,
@@ -350,6 +358,7 @@ const forgetActivationCode = () => {
   const activationCode = Math.floor(100000 + Math.random() * 900000).toString();
   return activationCode;
 };
+
 const checkIsValidForgetActivationCode = async (payload: {
   code: string;
   email: string;
@@ -371,6 +380,7 @@ const checkIsValidForgetActivationCode = async (payload: {
 
   return { valid: true };
 };
+
 //!
 const resetPassword = async (payload: {
   email: string;
@@ -378,6 +388,8 @@ const resetPassword = async (payload: {
   confirmPassword: string;
 }) => {
   const { email, newPassword, confirmPassword } = payload;
+
+  console.log("pass", email, newPassword, confirmPassword)
 
   if (newPassword !== confirmPassword) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Password didn't match");
@@ -400,6 +412,7 @@ const resetPassword = async (payload: {
   admin.verifyExpire = null;
   await admin.save();
 };
+
 //!
 const myProfile = async (req: Request) => {
   const { userId } = req.user as IReqUser;

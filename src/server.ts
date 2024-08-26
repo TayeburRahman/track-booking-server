@@ -21,7 +21,7 @@ async function main() {
     const port =
       typeof config.port === 'number' ? config.port : Number(config.port);
     server = app.listen(port, config.base_url as string, () => {
-      logger.info(`Example app listening on port ${config.port}`);
+      logger.info(`Example app listening on port http://192.168.10.236:${config.port}`);
     });
 
     const socketIO = new Server(server, {
@@ -31,7 +31,6 @@ async function main() {
       },
     });
     socket(socketIO);
-
     //@ts-ignore
     global.io = socketIO;
   } catch (error) {

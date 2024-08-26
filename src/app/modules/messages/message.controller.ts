@@ -5,9 +5,7 @@ import { messageService } from './message.service';
 
 const sendMessage: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    const result = await messageService.sendMessage(req);
-
-    console.log("ID", result)
+    const result = await messageService.sendMessage(req); 
 
     sendResponse(res, {
       statusCode: 200,
@@ -17,6 +15,7 @@ const sendMessage: RequestHandler = catchAsync(
     });
   },
 );
+
 const getMessages: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const result = await messageService.getMessages(req, res);
@@ -28,6 +27,7 @@ const getMessages: RequestHandler = catchAsync(
     });
   },
 );
+
 const conversationUser: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const result = await messageService.conversationUser();

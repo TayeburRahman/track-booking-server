@@ -5,6 +5,7 @@ import catchAsync from '../../../shared/catchasync';
 
 const forgotPass = catchAsync(async (req: Request, res: Response) => {
   await AuthService.forgotPass(req.body);
+  
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -15,6 +16,7 @@ const forgotPass = catchAsync(async (req: Request, res: Response) => {
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
   const token = req.headers.authorization || '';
   await AuthService.resetPassword(req.body, token);
+
   sendResponse(res, {
     statusCode: 200,
     success: true,

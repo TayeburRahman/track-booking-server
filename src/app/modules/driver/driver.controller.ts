@@ -174,6 +174,66 @@ const deleteMyAccount = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const blockDriver = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const result = await DriverService.blockDriver(id);
+  sendResponse<IDriver>(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Driver Blocked successfully',
+    data: result,
+  });
+});
+
+const truckLocationUpdate = catchAsync(async (req: Request, res: Response) => {
+  const result = await DriverService.truckLocationUpdate(req);
+  sendResponse<IDriver>(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Driver location update successfully',
+    data: result,
+  });
+});
+
+const truckLocation = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const result = await DriverService.truckLocation(id);
+  sendResponse<IDriver>(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Driver Blocked successfully',
+    data: result,
+  });
+});
+
+const allTruckLocation = catchAsync(async (req: Request, res: Response) => { 
+ 
+  const result = await DriverService.allTruckLocation();
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Driver location get successfully',
+    data: result,
+  });
+});
+
+const getDriversSortedByDistance = catchAsync(async (req: Request, res: Response) => { 
+ 
+  const result = await DriverService.getDriversSortedByDistance(req);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Driver location get successfully',
+    data: result,
+  });
+});
+
+
+ 
+
+
+ 
+
  
 
 export const DriverController = {
@@ -189,5 +249,10 @@ export const DriverController = {
   activateDriver,
   deleteMyAccount,
   checkIsValidForgetActivationCode,
-  resendActivationCode, 
+  resendActivationCode,
+  blockDriver,
+  truckLocation,
+  truckLocationUpdate,
+  allTruckLocation,
+  getDriversSortedByDistance
 };

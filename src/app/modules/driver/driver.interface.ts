@@ -1,6 +1,13 @@
 /* eslint-disable no-unused-vars */
 import { Model, Types } from 'mongoose';
 
+export type Ilocation ={
+  latitude: Number,
+  longitude: Number,
+  address:string, 
+
+}
+
 export type IDriver = {
   save(): unknown;
   _id?: Types.ObjectId;
@@ -34,6 +41,7 @@ export type IDriver = {
   expirationTime: Date;
   isActive: boolean;
   is_block: boolean;
+  location: Ilocation;
 };
 
 export type IActivationToken = {

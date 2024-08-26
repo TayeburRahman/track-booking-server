@@ -53,7 +53,6 @@ const sendMessage = async (req: Request) => {
 
     return newMessage;
   }
-  
 };
 
 //*
@@ -76,6 +75,7 @@ const getMessages = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
 const conversationUser = async () => {
   // const messageConversations = await Message.distinct('conversationId');
 
