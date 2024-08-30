@@ -4,10 +4,7 @@ const createTrip = z.object({
   body: z.object({
     driver: z.string({
       required_error: 'Driver ID is required',
-    }),
-    pickup: z.string({
-      required_error: 'Pickup location is required',
-    }),
+    }), 
     from: z.string({
       required_error: 'From is required',
     }),
@@ -20,7 +17,7 @@ const createTrip = z.object({
     tripType: z.string({
       required_error: 'tripType is required',
     }),
-    distance: z.string({
+    distance: z.number({
       required_error: 'Distance is required',
     }),
     amount: z.number({

@@ -95,24 +95,56 @@ const insertIntoDB = async (req: Request) => {
 //   }
 // };
 
-const myTrip = async (req: Request) => {
+const driverTrip = async (req: Request) => {
 
-  const { userId } = req.user as IReqUser;
-  const query = req.query as Record<string, unknown>;
+  const { userId } = req.user as IReqUser;  
+  const  {tripStatus}  = req.query;
 
-  if (Object.keys(query).length > 0) {
-    return await Trip.findOne({ driver: userId })
-      .sort({ createdAt: -1 })
-      .limit(1);
-  } else {
-    return await Trip.find({ driver: userId });
+  if (!userId) {
+    throw new Error('User ID or status is missing.');
   }
+
+  const query: any = { driver: userId };
+
+  if (tripStatus) {
+    query.acceptStatus = tripStatus; 
+  }
+
+  const trips = await Trip.find(query)
+    .sort({ createdAt: -1 })
+    .limit(1)
+    .populate({ path: 'driver', select: '_id name email role profile_image' })
+    .populate({ path: 'user', select: '_id name email role profile_image phoneNumber' })
+
+    return trips;
 };
 
 const usersTrip = async (req: Request) => {
-  const { userId } = req.user as IReqUser;
+  try {
+    const { userId } = req.user as IReqUser;
+    const  {tripStatus}  = req.query; 
 
-  return await Trip.findOne({ user: userId }).sort({ createdAt: -1 }).limit(1);
+    if (!userId) {
+      throw new Error('User ID or status is missing.');
+    }
+
+    const query: any = { user: userId };
+
+    if (tripStatus) {
+      query.acceptStatus = tripStatus; 
+    }
+
+    const trips = await Trip.find(query)
+      .sort({ createdAt: -1 })
+      .limit(1)
+      .populate({ path: 'driver', select: '_id name email role profile_image' })
+      .populate({ path: 'user', select: '_id name email role profile_image phoneNumber' })
+
+    return trips;
+  } catch (error) {
+    console.error('Error fetching user trips:', error);
+    throw new Error('Failed to fetch user trips.');
+  }
 };
 
 const myTripRequests = async (req: Request) => {
@@ -245,7 +277,7 @@ const searchTripDetails = async (id: string) => {
 
 export const TripService = {
   insertIntoDB,
-  myTrip,
+  driverTrip,
   acceptTrip,
   myTripRequests,
   searchTrip,

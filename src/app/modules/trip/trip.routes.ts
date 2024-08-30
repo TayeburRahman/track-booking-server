@@ -13,8 +13,9 @@ router.post(
   validateRequest(TripValidation.createTrip),
   TripController.insertIntoDB,
 );
-router.get('/my-trips', auth(ENUM_USER_ROLE.DRIVER), TripController.myTrip);
-router.get('/user-trip', auth(ENUM_USER_ROLE.USER), TripController.usersTrip);
+router.get('/my-trips', auth(ENUM_USER_ROLE.DRIVER), TripController.driverTrip);
+router.get('/user-history', auth(ENUM_USER_ROLE.USER), TripController.usersTrip);
+
 router.get(
   '/track-lists',
   auth(ENUM_USER_ROLE.DRIVER, ENUM_USER_ROLE.USER),

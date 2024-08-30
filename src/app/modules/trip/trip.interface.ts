@@ -11,7 +11,7 @@ export type ITrip = {
   tripType: 'single' | 'round' | 'allDay';
   time: string;
   amount: number;
-  distance: string;
+  distance: number;
   fee: number;
   acceptStatus: 'pending' | 'accepted' | 'end' | 'cancel';
 };

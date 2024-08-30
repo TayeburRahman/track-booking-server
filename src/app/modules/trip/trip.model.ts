@@ -14,8 +14,7 @@ const TripSchema = new mongoose.Schema<ITrip>(
       required: true,
     },
     pickup: {
-      type: String,
-      required: true,
+      type: String, 
     },
     from: {
       type: String,
@@ -35,7 +34,7 @@ const TripSchema = new mongoose.Schema<ITrip>(
       required: true,
     },
     distance: {
-      type: String,
+      type: Number,
       required: true,
     },
     amount: {
