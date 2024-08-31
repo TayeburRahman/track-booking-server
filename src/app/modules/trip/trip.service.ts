@@ -105,14 +105,12 @@ const driverTrip = async (req: Request) => {
   }
 
   const query: any = { driver: userId };
-
   if (tripStatus) {
     query.acceptStatus = tripStatus; 
   }
 
   const trips = await Trip.find(query)
-    .sort({ createdAt: -1 })
-    .limit(1)
+    .sort({ createdAt: -1 }) 
     .populate({ path: 'driver', select: '_id name email role profile_image' })
     .populate({ path: 'user', select: '_id name email role profile_image phoneNumber' })
 

@@ -19,7 +19,7 @@ const driverTrip = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Trip retrieved successfully',
+    message: 'Trip data retrieved successfully',
     data: result,
   });
 });
@@ -29,7 +29,7 @@ const usersTrip = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Trip retrieved successfully',
+    message: 'Trip-accpeted data get successfully',
     data: result,
   });
 });
@@ -39,7 +39,7 @@ const myTripRequests = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Trip retrieved successfully',
+    message: 'Trip-request data retrieved successfully',
     data: result,
   });
 });
