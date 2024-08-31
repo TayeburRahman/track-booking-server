@@ -13,7 +13,7 @@ router.post(
   validateRequest(TripValidation.createTrip),
   TripController.insertIntoDB,
 );
-router.get('/my-trips', auth(ENUM_USER_ROLE.DRIVER), TripController.driverTrip);
+router.get('/my-trips', auth(ENUM_USER_ROLE.DRIVER), TripController.driverTripHistory);
 router.get('/user-history', auth(ENUM_USER_ROLE.USER), TripController.usersTrip);
 
 router.get(

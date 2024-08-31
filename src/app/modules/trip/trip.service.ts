@@ -95,32 +95,30 @@ const insertIntoDB = async (req: Request) => {
 //   }
 // };
 
-const driverTrip = async (req: Request) => {
+const driverTripHistory = async (req: Request) => {
 
-  const { userId } = req.user as IReqUser;  
-  const  {tripStatus}  = req.query;
-
+  const { userId } = req.user as IReqUser;
+  const { tripStatus } = req.query;
   if (!userId) {
     throw new Error('User ID or status is missing.');
   }
-
   const query: any = { driver: userId };
+  query.acceptStatus = { $ne: 'pending' };
   if (tripStatus) {
-    query.acceptStatus = tripStatus; 
+    query.acceptStatus = tripStatus;
   }
-
   const trips = await Trip.find(query)
-    .sort({ createdAt: -1 }) 
+    .sort({ createdAt: -1 })
     .populate({ path: 'driver', select: '_id name email role profile_image' })
     .populate({ path: 'user', select: '_id name email role profile_image phoneNumber' })
 
-    return trips;
+  return trips;
 };
 
 const usersTrip = async (req: Request) => {
   try {
     const { userId } = req.user as IReqUser;
-    const  {tripStatus}  = req.query; 
+    const { tripStatus } = req.query;
 
     if (!userId) {
       throw new Error('User ID or status is missing.');
@@ -129,7 +127,7 @@ const usersTrip = async (req: Request) => {
     const query: any = { user: userId };
 
     if (tripStatus) {
-      query.acceptStatus = tripStatus; 
+      query.acceptStatus = tripStatus;
     }
 
     const trips = await Trip.find(query)
@@ -149,7 +147,10 @@ const myTripRequests = async (req: Request) => {
   const { userId } = req.user as IReqUser;
   return await Trip.find({
     $and: [{ driver: userId }, { acceptStatus: 'pending' }],
-  });
+  })
+    .sort({ createdAt: -1 })
+    .populate({ path: 'driver', select: '_id name email role profile_image' })
+    .populate({ path: 'user', select: '_id name email role profile_image phoneNumber' })
 };
 
 const acceptTrip = async (req: Request) => {
@@ -200,7 +201,7 @@ const endTrip = async (req: Request) => {
 const cancelTrip = async (req: Request) => {
   const { id } = req.params;
   const isExistTrip = await Trip.findById(id);
- 
+
   if (!isExistTrip) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Trip not found');
   }
@@ -208,7 +209,7 @@ const cancelTrip = async (req: Request) => {
   if (isExistTrip.acceptStatus === 'cancel') {
     throw new ApiError(httpStatus.CONFLICT, 'Already canceled');
   }
-  
+
   return await Trip.findByIdAndUpdate(
     id,
     { acceptStatus: 'cancel' },
@@ -275,7 +276,7 @@ const searchTripDetails = async (id: string) => {
 
 export const TripService = {
   insertIntoDB,
-  driverTrip,
+  driverTripHistory,
   acceptTrip,
   myTripRequests,
   searchTrip,

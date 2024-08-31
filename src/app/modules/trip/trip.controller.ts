@@ -14,8 +14,8 @@ const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const driverTrip = catchAsync(async (req: Request, res: Response) => {
-  const result = await TripService.driverTrip(req);
+const driverTripHistory = catchAsync(async (req: Request, res: Response) => {
+  const result = await TripService.driverTripHistory(req);
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -86,7 +86,7 @@ const searchTrip = catchAsync(async (req: Request, res: Response) => {
 
 const searchTripDetails = catchAsync(async (req: Request, res: Response) => {
   const result = await TripService.searchTripDetails(req.params.id);
-  
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -97,7 +97,7 @@ const searchTripDetails = catchAsync(async (req: Request, res: Response) => {
 
 export const TripController = {
   insertIntoDB,
-  driverTrip,
+  driverTripHistory,
   acceptTrip,
   myTripRequests,
   searchTrip,
