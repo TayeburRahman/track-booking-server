@@ -1,12 +1,11 @@
 /* eslint-disable no-unused-vars */
 import { Model, Types } from 'mongoose';
 
-export type Ilocation ={
-  latitude: Number,
-  longitude: Number,
-  address:string, 
-
-}
+export type Ilocation = {
+  latitude: Number;
+  longitude: Number;
+  address: string;
+};
 
 export type IDriver = {
   save(): unknown;
@@ -28,7 +27,6 @@ export type IDriver = {
   cargoCapacity: string;
   services: [];
   kmForPrice: string;
-  price: string;
   bankAccountNumber: string;
   bankName: string;
   routingNumber: string;

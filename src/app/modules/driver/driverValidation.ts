@@ -29,9 +29,9 @@ const createDriverSchema = z.object({
     kmForPrice: z.string({
       required_error: 'Km for price is required',
     }),
-    price: z.string({
-      required_error: 'Price is required',
-    }),
+    // price: z.string({
+    //   required_error: 'Price is required',
+    // }),
     bankAccountNumber: z.string({
       required_error: 'Bank account number is required',
     }),
@@ -96,7 +96,7 @@ const updateDriverSchema = z.object({
     truckType: z.string().optional(),
     cargoCapacity: z.string().optional(),
     kmForPrice: z.string().optional(),
-    price: z.string().optional(),
+    // price: z.string().optional(),
     bankAccountNumber: z.string().optional(),
     bankName: z.string().optional(),
     routingNumber: z.string().optional(),

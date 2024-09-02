@@ -94,10 +94,10 @@ const driverSchema = new Schema<IDriver>(
       type: String,
       required: false,
     },
-    price: {
-      type: String,
-      // required: false,
-    },
+    // price: {
+    //   type: String,
+    //   // required: false,
+    // },
     bankAccountNumber: {
       type: String,
       required: false,
