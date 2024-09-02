@@ -1,3 +1,4 @@
+// @ts ignore
 import { io } from './socket';
 
 export const SocketResponse = (data: any) => {

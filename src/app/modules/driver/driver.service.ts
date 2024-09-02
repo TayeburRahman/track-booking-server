@@ -81,7 +81,6 @@ const registerDriver = async (req: CustomRequest) => {
 
 //!
 const updateProfile = async (req: CustomRequest): Promise<IDriver | null> => {
-
   const { files } = req;
   const { userId } = req.user as IReqUser;
   //@ts-ignore
@@ -209,7 +208,7 @@ const getAllDriver = async (
     meta,
     data: result,
   };
-}; 
+};
 
 //!
 const getSingleDriver = async (user: IReqUser) => {
@@ -479,42 +478,46 @@ const blockDriver = async (id: string): Promise<IDriver | null> => {
 
 const truckLocationUpdate = async (req: Request): Promise<IDriver | null> => {
   const { id } = req.params;
-  const { latitude, longitude, address}: Ilocation = req.body;
+  const { latitude, longitude, address }: Ilocation = req.body;
 
-  if (!id || latitude === undefined || longitude === undefined || address === undefined) {
+  if (
+    !id ||
+    latitude === undefined ||
+    longitude === undefined ||
+    address === undefined
+  ) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid request parameters');
   }
 
-  console.log("address",address)
+  console.log('address', address);
 
   const updatedDriver = await Driver.findByIdAndUpdate(
     id,
     {
-      $set: { 'location': { latitude, longitude, address } }
+      $set: { location: { latitude, longitude, address } },
     },
-    { new: true }
+    { new: true },
   );
 
   return updatedDriver;
 };
 
 const truckLocation = async (id: string): Promise<IDriver | null> => {
-  const result = await Driver.findById(id)     
+  const result = await Driver.findById(id);
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, 'No Driver Found');
-  } 
+  }
   return result;
 };
 
 const allTruckLocation = async () => {
-
   const drivers = await Driver.find()
     .select('_id name phoneNumber profile_image location')
     .exec();
 
   if (!drivers.length) {
     throw new ApiError(httpStatus.NOT_FOUND, 'No Driver Found');
-  } 
+  }
 
   return drivers;
 };
@@ -522,7 +525,12 @@ const allTruckLocation = async () => {
 const getDriversSortedByDistance = async (req: Request): Promise<IDriver[]> => {
   const { latitude, longitude, maxDistance } = req.body;
 
-  console.log("latitude, longitude, maxDistance", latitude, longitude, maxDistance);
+  // console.log(
+  //   'latitude, longitude, maxDistance',
+  //   latitude,
+  //   longitude,
+  //   maxDistance,
+  // );
 
   // Fetch all drivers from the database
   const allDrivers = await Driver.find({});
@@ -532,8 +540,13 @@ const getDriversSortedByDistance = async (req: Request): Promise<IDriver[]> => {
     .map(driver => {
       const driverLat: any = driver.location.latitude;
       const driverLon: any = driver.location.longitude;
-      const distance = haversineDistance(latitude, longitude, driverLat, driverLon);
-      
+      const distance = haversineDistance(
+        latitude,
+        longitude,
+        driverLat,
+        driverLon,
+      );
+
       return { ...driver.toObject(), distance };
     })
     .filter(driver => driver.distance <= maxDistance)
@@ -541,7 +554,6 @@ const getDriversSortedByDistance = async (req: Request): Promise<IDriver[]> => {
 
   return driversWithDistance;
 };
-
 
 export const DriverService = {
   getAllDriver,
@@ -561,5 +573,5 @@ export const DriverService = {
   truckLocation,
   truckLocationUpdate,
   allTruckLocation,
-  getDriversSortedByDistance
+  getDriversSortedByDistance,
 };

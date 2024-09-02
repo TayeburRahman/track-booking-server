@@ -3,8 +3,7 @@ import { DriverModel, IDriver, Ilocation } from './driver.interface';
 import config from '../../../config';
 import bcrypt from 'bcrypt';
 
-
-const locationSchema = new Schema<Ilocation>({ 
+const locationSchema = new Schema<Ilocation>({
   latitude: {
     type: Number,
     required: true,
@@ -12,12 +11,12 @@ const locationSchema = new Schema<Ilocation>({
   longitude: {
     type: Number,
     required: true,
-  }, 
+  },
   address: {
     type: String,
     required: true,
   },
-}); 
+});
 
 const driverSchema = new Schema<IDriver>(
   {
@@ -97,7 +96,7 @@ const driverSchema = new Schema<IDriver>(
     },
     price: {
       type: String,
-      required: false,
+      // required: false,
     },
     bankAccountNumber: {
       type: String,
@@ -134,7 +133,7 @@ const driverSchema = new Schema<IDriver>(
       default: false,
     },
     location: {
-      type: locationSchema, 
+      type: locationSchema,
     },
   },
   {

@@ -9,9 +9,8 @@ import { ILoginUserResponse } from '../auth/auth.interface';
 
 const registrationUser: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    console.log("add", req.body )
+    console.log('add', req.body);
     await UserService.registrationUser(req.body);
-
     sendResponse(res, {
       statusCode: 200,
       success: true,

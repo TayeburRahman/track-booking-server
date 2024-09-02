@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Request } from 'express';
 import multer from 'multer';
-import fs from 'fs'
+import fs from 'fs';
 
 export const uploadFile = () => {
   const storage = multer.diskStorage({
@@ -61,10 +61,8 @@ export const uploadFile = () => {
     ];
 
     if (file.fieldname === undefined) {
-
       // Allow requests without any files
       cb(null, true);
-      
     } else if (allowedFieldnames.includes(file.fieldname)) {
       if (
         file.mimetype === 'image/jpeg' ||

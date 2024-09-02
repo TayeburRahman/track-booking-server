@@ -60,27 +60,23 @@ router.patch(
 );
 
 router.get(
-  '/truck/location', 
-  auth(ENUM_USER_ROLE.DRIVER, ENUM_USER_ROLE.USER, ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
+  '/truck/location',
+  auth(
+    ENUM_USER_ROLE.DRIVER,
+    ENUM_USER_ROLE.USER,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.SUPER_ADMIN,
+  ),
   DriverController.allTruckLocation,
 );
 
-router.patch(
-  '/:id/location', 
-  DriverController.truckLocationUpdate,
-);
+router.patch('/:id/location', DriverController.truckLocationUpdate);
 
-router.get(
-  '/:id/location', 
-  DriverController.truckLocation,
-);
+router.get('/:id/location', DriverController.truckLocation);
 
 router.post(
-  '/get/search-location', 
+  '/get/search-location',
   DriverController.getDriversSortedByDistance,
 );
- 
-
- 
 
 export const DriverRoutes = router;

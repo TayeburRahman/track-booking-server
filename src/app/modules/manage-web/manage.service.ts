@@ -14,6 +14,7 @@ const addPrivacyPolicy = async (payload: any) => {
     return await PrivacyPolicy.create(payload);
   }
 };
+
 const getPrivacyPolicy = async () => {
   return await PrivacyPolicy.findOne();
 };
