@@ -109,7 +109,7 @@ const activateUser = async (payload: IActivationRequest) => {
     config.jwt.secret as Secret,
     config.jwt.expires_in as string,
   );
-  
+
   //Create refresh token
   const refreshToken = jwtHelpers.createToken(
     { userId: existUser._id, role: existUser.role },
@@ -255,8 +255,7 @@ const loginUser = async (payload: ILoginUser) => {
 
   return {
     id: checkUser?._id,
-    conversationId: checkUser?.conversationId,
-    isPaid: checkUser?.isPaid,
+    user: checkUser,
     accessToken,
     refreshToken,
   };
@@ -421,12 +420,12 @@ const checkIsValidForgetActivationCode = async (payload: {
 };
 //!
 const resetPassword = async (req: Request) => {
-  const {userId} = req.user  as IReqUser
-  const {  newPassword, confirmPassword } = req.body;
+  const { userId } = req.user as IReqUser;
+  const { newPassword, confirmPassword } = req.body;
   if (newPassword !== confirmPassword) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Password didn't match");
   }
-  const user = await User.findOne({ _id:userId }, { _id: 1 });
+  const user = await User.findOne({ _id: userId }, { _id: 1 });
 
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User not found!');
@@ -439,7 +438,7 @@ const resetPassword = async (req: Request) => {
     Number(config.bcrypt_salt_rounds),
   );
 
-  await User.updateOne({_id: userId }, { password }, { new: true });
+  await User.updateOne({ _id: userId }, { password }, { new: true });
   user.verifyCode = null;
   user.verifyExpire = null;
   await user.save();

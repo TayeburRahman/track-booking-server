@@ -265,6 +265,7 @@ const loginDriver = async (payload: ILoginUser) => {
 
   return {
     id: checkDriver?._id,
+    driver: checkDriver,
     accessToken,
     refreshToken,
   };

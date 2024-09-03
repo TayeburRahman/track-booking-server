@@ -33,9 +33,11 @@ router.patch(
   UserController.changePassword,
 );
 router.post('/forgot-password', UserController.forgotPass);
-router.post('/reset-password',
+router.post(
+  '/reset-password',
   auth(ENUM_USER_ROLE.USER, ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
-  UserController.resetPassword);
+  UserController.resetPassword,
+);
 router.post('/resend', UserController.resendActivationCode);
 router.post('/verify-otp', UserController.checkIsValidForgetActivationCode);
 

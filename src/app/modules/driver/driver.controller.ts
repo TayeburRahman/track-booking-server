@@ -3,7 +3,6 @@ import { Request, RequestHandler, Response } from 'express';
 import sendResponse from '../../../shared/sendResponse';
 import catchAsync from '../../../shared/catchasync';
 import config from '../../../config';
-
 import { DriverService } from './driver.service';
 import { IDriver } from './driver.interface';
 import { IReqUser } from '../user/user.interface';
@@ -11,8 +10,8 @@ import { ILoginUserResponse } from '../auth/auth.interface';
 
 const registerDriver: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    console.log("update", req)
-    
+    console.log('update', req);
+
     await DriverService.registerDriver(req as any);
 
     sendResponse(res, {
@@ -206,8 +205,7 @@ const truckLocation = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const allTruckLocation = catchAsync(async (req: Request, res: Response) => { 
- 
+const allTruckLocation = catchAsync(async (req: Request, res: Response) => {
   const result = await DriverService.allTruckLocation();
   sendResponse(res, {
     statusCode: 200,
@@ -217,24 +215,17 @@ const allTruckLocation = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getDriversSortedByDistance = catchAsync(async (req: Request, res: Response) => { 
- 
-  const result = await DriverService.getDriversSortedByDistance(req);
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: 'Driver location get successfully',
-    data: result,
-  });
-});
-
-
- 
-
-
- 
-
- 
+const getDriversSortedByDistance = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await DriverService.getDriversSortedByDistance(req);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Driver location get successfully',
+      data: result,
+    });
+  },
+);
 
 export const DriverController = {
   getAllDriver,
@@ -254,5 +245,5 @@ export const DriverController = {
   truckLocation,
   truckLocationUpdate,
   allTruckLocation,
-  getDriversSortedByDistance
+  getDriversSortedByDistance,
 };

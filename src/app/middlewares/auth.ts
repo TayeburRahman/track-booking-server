@@ -29,7 +29,7 @@ const auth =
           token,
           config.jwt.secret as Secret,
         );
- 
+
         //set user to headers
         req.user = verifyUser;
         const isExist = await User.findById(verifyUser?.userId);

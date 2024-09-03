@@ -389,7 +389,7 @@ const resetPassword = async (payload: {
 }) => {
   const { email, newPassword, confirmPassword } = payload;
 
-  console.log("pass", email, newPassword, confirmPassword)
+  console.log('pass', email, newPassword, confirmPassword);
 
   if (newPassword !== confirmPassword) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Password didn't match");
