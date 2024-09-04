@@ -22,6 +22,8 @@ const insertIntoDB = async (req: Request) => {
     user: userId,
   });
 
+  console.log('add', result);
+
   if (result) {
     const notificationMessage = `You have a new trip request from ${tripData.pickup} to ${tripData.to}.`;
     const notification = await Notification.create({
@@ -96,21 +98,23 @@ const insertIntoDB = async (req: Request) => {
 // };
 
 const driverTripHistory = async (req: Request) => {
-
   const { userId } = req.user as IReqUser;
   const { tripStatus } = req.query;
   if (!userId) {
     throw new Error('User ID or status is missing.');
   }
   const query: any = { driver: userId };
-  query.acceptStatus = { $ne: 'pending' };
+  // query.acceptStatus = { $ne: 'pending' };
   if (tripStatus) {
     query.acceptStatus = tripStatus;
   }
   const trips = await Trip.find(query)
     .sort({ createdAt: -1 })
     .populate({ path: 'driver', select: '_id name email role profile_image' })
-    .populate({ path: 'user', select: '_id name email role profile_image phoneNumber' })
+    .populate({
+      path: 'user',
+      select: '_id name email role profile_image phoneNumber',
+    });
 
   return trips;
 };
@@ -118,23 +122,30 @@ const driverTripHistory = async (req: Request) => {
 const usersTrip = async (req: Request) => {
   try {
     const { userId } = req.user as IReqUser;
-    const { tripStatus } = req.query;
+    const { status }: any = req.query;
 
     if (!userId) {
-      throw new Error('User ID or status is missing.');
+      throw new Error('User ID is missing.');
     }
 
     const query: any = { user: userId };
 
-    if (tripStatus) {
-      query.acceptStatus = tripStatus;
+    // Determine the status filter based on the query parameter 'st'
+    if (status === 'current') {
+      query.acceptStatus = { $in: ['pending', 'accepted'] };
+    } else if (status === 'history') {
+      query.acceptStatus = { $in: ['end', 'cancel'] };
+    } else if (status) {
+      throw new Error('Invalid status value.');
     }
 
     const trips = await Trip.find(query)
       .sort({ createdAt: -1 })
-      .limit(1)
       .populate({ path: 'driver', select: '_id name email role profile_image' })
-      .populate({ path: 'user', select: '_id name email role profile_image phoneNumber' })
+      .populate({
+        path: 'user',
+        select: '_id name email role profile_image phoneNumber',
+      });
 
     return trips;
   } catch (error) {
@@ -145,12 +156,21 @@ const usersTrip = async (req: Request) => {
 
 const myTripRequests = async (req: Request) => {
   const { userId } = req.user as IReqUser;
-  return await Trip.find({
+  const result = await Trip.find({
     $and: [{ driver: userId }, { acceptStatus: 'pending' }],
   })
     .sort({ createdAt: -1 })
     .populate({ path: 'driver', select: '_id name email role profile_image' })
-    .populate({ path: 'user', select: '_id name email role profile_image phoneNumber' })
+    .populate({
+      path: 'user',
+      select: '_id name email role profile_image phoneNumber',
+    });
+
+  const currentTrip = await Trip.findOne({
+    $and: [{ driver: userId }, { acceptStatus: 'accepted' }],
+  });
+
+  return { result, currentTrip: !!currentTrip };
 };
 
 const acceptTrip = async (req: Request) => {
@@ -261,7 +281,7 @@ const searchTrip = async () => {
 };
 
 const searchTripDetails = async (id: string) => {
-  const findDriver = await Driver.findById(id);
+  const findDriver: any = await Driver.findById(id);
 
   const formattedData = {
     id: findDriver?._id,

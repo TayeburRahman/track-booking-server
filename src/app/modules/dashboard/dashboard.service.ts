@@ -22,7 +22,7 @@ const totalCount = async () => {
 
   const newDriversDetails = await Driver.find({
     createdAt: { $gte: oneMonthAgo },
-  }); 
+  });
 
   return {
     users,
@@ -68,7 +68,7 @@ const getDriverGrowth = async (year?: number) => {
       {
         $sort: { month: 1 },
       },
-    ]); 
+    ]);
 
     const months = [
       'Jan',
@@ -111,7 +111,7 @@ const getDriverGrowth = async (year?: number) => {
 const getAllDriver = async (
   query: Record<string, unknown>,
 ): Promise<IGenericResponse<IDriver[]>> => {
-  console.log("query", query)
+  console.log('query', query);
   const driverQuery = new QueryBuilder(Driver.find(), query)
     .search(['name'])
     .filter()
@@ -148,9 +148,7 @@ const getAllUsers = async (
 };
 
 // -------------------
-const getOverView = async()=>{
-
-}
+const getOverView = async () => {};
 
 const getSerchUser = async (name: string) => {
   const result = await User.find({ name: { $regex: new RegExp(name, 'i') } });
@@ -158,7 +156,6 @@ const getSerchUser = async (name: string) => {
     data: result,
   };
 };
-
 
 const getSerchDriver = async (name: string) => {
   const result = await Driver.find({ name: { $regex: new RegExp(name, 'i') } });
@@ -168,14 +165,14 @@ const getSerchDriver = async (name: string) => {
 };
 
 const deleteDriver = async (id: string) => {
-  const result = await Driver.deleteOne({_id: id});
+  const result = await Driver.deleteOne({ _id: id });
   return {
     data: result,
   };
 };
 
 const deleteUser = async (id: string) => {
-  const result = await User.deleteOne({_id: id});
+  const result = await User.deleteOne({ _id: id });
   return {
     data: result,
   };
@@ -190,5 +187,5 @@ export const DashboardService = {
   getSerchUser,
   getSerchDriver,
   deleteDriver,
-  deleteUser
+  deleteUser,
 };

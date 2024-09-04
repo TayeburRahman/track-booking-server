@@ -539,8 +539,8 @@ const getDriversSortedByDistance = async (req: Request): Promise<IDriver[]> => {
   // Calculate distance and filter drivers
   const driversWithDistance = allDrivers
     .map(driver => {
-      const driverLat: any = driver.location.latitude;
-      const driverLon: any = driver.location.longitude;
+      const driverLat: any = driver?.location?.latitude;
+      const driverLon: any = driver?.location?.longitude;
       const distance = haversineDistance(
         latitude,
         longitude,
