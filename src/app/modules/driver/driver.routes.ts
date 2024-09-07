@@ -29,6 +29,13 @@ router.post(
   auth(ENUM_USER_ROLE.DRIVER),
   DriverController.deleteMyAccount,
 );
+
+router.post(
+  '/delete-account/:id',
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
+  DriverController.deleteMyAccount,
+);
+
 router.patch(
   '/change-password',
   auth(ENUM_USER_ROLE.DRIVER),

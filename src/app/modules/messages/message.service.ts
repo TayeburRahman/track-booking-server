@@ -3,134 +3,94 @@ import { Request, Response } from 'express';
 import Conversation from './conversation.model';
 import Message from './message.model';
 import ApiError from '../../../errors/ApiError';
-import User from '../user/user.model';
-import Driver from '../driver/driver.model';
+import { Server } from 'socket.io';
 
 //* One to one conversation
-const sendMessage = async (req: Request) => {
-  const { id: receiverId } = req.params;
-  const senderId = req.user?.userId;
-  const data = req.body; 
+const sendMessage = async (data: any, io: Server) => {
+  const { senderId, receiverId, text } = data;
+  // const files: any = req.files;
 
-  const { message } = data;
-
-  // console.log("meassage", message)
-
-  if (receiverId === null || senderId === null) {
+  if (!receiverId || !senderId) {
     throw new ApiError(404, 'Sender or Receiver user not found');
   }
- 
+
   let conversation = await Conversation.findOne({
     participants: { $all: [senderId, receiverId] },
   });
 
-  // console.log("conversation", conversation)
-   
-  if(!conversation) { 
+  if (!conversation) {
     conversation = await Conversation.create({
       participants: [senderId, receiverId],
     });
-    const newMessage = new Message({
-      senderId,
-      receiverId,
-      message,
-      conversationId: conversation._id,
-    });
-
-    // console.log("newMessage", newMessage)
-
-    if (newMessage) {
-      conversation.messages.push(newMessage._id);
-    }
-    await Promise.all([conversation.save(), newMessage.save()]);
-    //@ts-ignore
-    const socketIO = global.io;
-    if (socketIO && conversation && newMessage) {
-      //@ts-ignore
-      // socketIO.to(receiverId).emit('getMessage', newMessage);
-      socketIO.emit(`message::${conversation._id.toString()}`, newMessage);
-    }
-
-    return newMessage;
   }
-};
 
-//*
-const getMessages = async (req: Request, res: Response) => {
-  try {
-    const { id: receiverId } = req.params;
-    const senderId = req?.user?.userId;
-    const conversation = await Conversation.findOne({
-      participants: { $all: [senderId, receiverId] },
-    }).populate('messages');
-
-    if (!conversation) return res.status(200).json([]);
-
-    const messages = conversation.messages;
-
-    return messages;
-  } catch (error) {
-    //@ts-ignore
-    console.log('Error in getMessages controller: ', error.message);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
-const conversationUser = async () => {
-  // const messageConversations = await Message.distinct('conversationId');
-
-  // const conversationsWithMessages = await Conversation.find({
-  //   _id: { $in: messageConversations },
-  // }).populate({
-  //   path: 'participants',
-  //   select: '_id name email role profile_image',
-  // });
-
-  // return conversationsWithMessages;
-  const messageConversations = await Message.distinct('conversationId');
-
-  console.log("messageConversations", messageConversations)
-
-  const conversations = await Conversation.find({
-    _id: { $in: messageConversations },
+  const newMessage = new Message({
+    senderId,
+    receiverId,
+    text,
+    conversationId: conversation._id,
   });
 
-  const participantIds = [
-    ...new Set(conversations.flatMap(convo => convo.participants)),
-  ];
+  conversation.messages.push(newMessage._id);
+  await Promise.all([conversation.save(), newMessage.save()]);
 
-  const users = await User.find({
-    _id: { $in: participantIds },
-  }).select('_id name email role ');
+  //@ts-ignore
+  io.to(senderId).emit('single-message', newMessage || []);
+  io.to(receiverId).emit('single-message', newMessage || []);
 
-  const drivers = await Driver.find({
-    _id: { $in: participantIds },
-  }).select('_id name email role ');
-
-  const userMap = users.reduce((acc, user) => {
-    //@ts-ignore
-    acc[user._id] = { ...user._doc, type: 'User' };
-    return acc;
-  }, {});
-
-  const driverMap = drivers.reduce((acc, driver) => {
-    //@ts-ignore
-    acc[driver._id] = { ...driver._doc, type: 'Driver' };
-    return acc;
-  }, {});
-
-  const participantMap = { ...userMap, ...driverMap };
-
-  const conversationsWithParticipants = conversations.map(convo => ({
-    //@ts-ignore
-    ...convo._doc,
-    participants: convo.participants.map(
-      //@ts-ignore
-      participantId => participantMap[participantId],
-    ),
-  }));
-  return conversationsWithParticipants;
+  return newMessage;
 };
+
+const getMessages = async (data: any, io: Server) => {
+  const { senderId, receiverId, page } = data;
+
+  if (!receiverId || !senderId) {
+    throw new ApiError(404, 'Sender or Receiver user not found');
+  }
+
+  const conversation = await Conversation.findOne({
+    participants: { $all: [senderId, receiverId] },
+  }).populate({
+    path: 'messages',
+    options: {
+      sort: { createdAt: 1 },
+      skip: (page - 1) * 20,
+      limit: 20,
+    },
+  });
+
+  if (!conversation) {
+    return 'Conversation not found';
+  }
+
+  io.to(senderId).emit('message', conversation?.messages || []);
+  io.to(receiverId).emit('message', conversation?.messages || []);
+
+  return conversation;
+};
+
+const conversationUser = async (data: any, io: Server) => {
+  const { loginId } = data;
+
+  try {
+    const conversations: any = await Conversation.find({
+      participants: { $in: [loginId] },
+    }).populate({
+      path: 'messages',
+      options: {
+        sort: { createdAt: 1 },
+        limit: 2,
+      },
+    });
+
+    io.to(loginId).emit('message', conversations || []);
+    return conversations;
+  } catch (error) {
+    console.error('Error fetching conversations for user:', error);
+    throw error;
+  }
+};
+
 export const messageService = {
   sendMessage,
   getMessages,

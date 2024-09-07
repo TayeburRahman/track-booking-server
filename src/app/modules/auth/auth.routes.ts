@@ -61,6 +61,13 @@ router.patch(
   UserController.updateProfile,
 );
 
+router.delete(
+  '/delete-account/:id',
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
+  uploadFile(),
+  UserController.deleteUser,
+);
+
 //! Admin Authentication Start
 router.post(
   '/admin/register',

@@ -137,7 +137,7 @@ const driverSchema = new Schema<IDriver>(
     },
   },
   {
-    timestamps: false,
+    timestamps: true,
   },
 );
 driverSchema.statics.isDriverExist = async function (

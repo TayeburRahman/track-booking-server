@@ -45,16 +45,17 @@ const AdminSchema = new Schema<IAdmin, AdminModel>(
     },
     profile_image: {
       type: String,
-      default:
-        'https://st3.depositphotos.com/15648834/17930/v/450/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg',
+    },
+
+    verifyExpire: {
+      type: Date,
     },
 
     verifyCode: {
       type: String,
     },
-
-    verifyExpire: {
-      type: Date,
+    location: {
+      type: String,
     },
     role: {
       type: String,

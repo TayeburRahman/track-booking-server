@@ -10,12 +10,12 @@ router.get(
 );
 router.get(
   '/all-drivers',
-  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
+  // auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
   DashboardController.getAllDriver,
 );
 router.get(
   '/all-users',
-  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
+  // auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
   DashboardController.getAllUsers,
 );
 router.get(
@@ -33,7 +33,7 @@ router.get(
 router.get(
   '/search-user',
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
-  DashboardController.searchByUserName
+  DashboardController.searchByUserName,
 );
 
 router.get(
@@ -53,6 +53,17 @@ router.delete(
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
   DashboardController.deleteUserById,
 );
- 
+
+router.get(
+  '/driver/:id',
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
+  DashboardController.getSingleDriver,
+);
+
+router.get(
+  '/user/:id',
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
+  DashboardController.getSingleUser,
+);
 
 export const DashboardRoutes = router;

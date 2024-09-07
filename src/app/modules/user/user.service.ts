@@ -181,7 +181,7 @@ const updateProfile = async (req: Request): Promise<IUser | null> => {
   //@ts-ignore
   if (files && files.profile_image) {
     //@ts-ignore
-    profile_image = `/images/image/${files.profile_image[0].filename}`;
+    profile_image = `/images/profile/${files.profile_image[0].filename}`;
   }
 
   //@ts-ignore

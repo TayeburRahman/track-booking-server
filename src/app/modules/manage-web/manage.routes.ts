@@ -23,9 +23,15 @@ router.post(
 
 router.get(
   '/get-privacy-policy',
-  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.USER, ENUM_USER_ROLE.SUPER_ADMIN),
+  auth(
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.USER,
+    ENUM_USER_ROLE.DRIVER,
+    ENUM_USER_ROLE.SUPER_ADMIN,
+  ),
   ManageController.getPrivacyPolicy,
 );
+
 router.get(
   '/get-support-contact',
   auth(
@@ -39,7 +45,12 @@ router.get(
 
 router.get(
   '/get-terms-conditions',
-  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.USER, ENUM_USER_ROLE.SUPER_ADMIN),
+  auth(
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.USER,
+    ENUM_USER_ROLE.DRIVER,
+    ENUM_USER_ROLE.SUPER_ADMIN,
+  ),
   ManageController.getTermsConditions,
 );
 

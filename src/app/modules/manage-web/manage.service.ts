@@ -30,7 +30,7 @@ const deletePrivacyPolicy = async (id: string) => {
 const addTermsConditions = async (payload: any) => {
   const checkIsExist = await TermsConditions.findOne();
   if (checkIsExist) {
-    await TermsConditions.findOneAndUpdate({}, payload, {
+    return await TermsConditions.findOneAndUpdate({}, payload, {
       new: true,
 
       runValidators: true,
@@ -39,6 +39,7 @@ const addTermsConditions = async (payload: any) => {
     return await TermsConditions.create(payload);
   }
 };
+
 const getTermsConditions = async () => {
   return await TermsConditions.findOne();
 };

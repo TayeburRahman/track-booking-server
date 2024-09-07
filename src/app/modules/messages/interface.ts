@@ -13,7 +13,7 @@ export type IMessage = {
   receiverId: Types.ObjectId | IUser;
   conversationId: Types.ObjectId | IConversation;
   image: string;
-  message: string;
+  text: string;
   externalModelType: string;
 };
 

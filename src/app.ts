@@ -8,7 +8,9 @@ import bodyParser from 'body-parser';
 
 import './app/modules/subscriptions/subscription.cron';
 import './app/modules/notifications/notification.cron';
-export const app: Application = express();
+// export const app: Application = express();
+
+import { app, server } from './socket/socket';
 
 app.use(
   cors({
@@ -16,6 +18,9 @@ app.use(
       'http://192.168.10.16:3000',
       'http://192.168.30.250:3000',
       'http://192.168.10.102:3000',
+      'http://192.168.10.103:3001',
+      'http://192.168.10.103:3001',
+      'http://localhost:5173',
     ],
     credentials: true,
   }),
@@ -41,3 +46,5 @@ app.get('/', async (req: Request, res: Response) => {
 app.use(globalErrorHandler);
 //handle not found
 app.use(NotFoundHandler.handle);
+
+export default server;

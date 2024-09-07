@@ -60,6 +60,10 @@ const registerDriver = async (req: CustomRequest) => {
     if (files.truckImage) {
       payload.truckImage = `/images/trucks/${files.truckImage[0].filename}`;
     }
+    if (files.profile_image) {
+      //@ts-ignore
+      data.profile_image = `/images/profile/${files.profile_image[0].filename}`;
+    }
   }
 
   const activationToken = createActivationToken();
@@ -110,7 +114,7 @@ const updateProfile = async (req: CustomRequest): Promise<IDriver | null> => {
     }
     if (files.profile_image) {
       //@ts-ignore
-      data.profile_image = `/images/image/${files.profile_image[0].filename}`;
+      data.profile_image = `/images/profile/${files.profile_image[0].filename}`;
     }
   }
 

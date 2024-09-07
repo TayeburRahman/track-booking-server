@@ -6,6 +6,8 @@ import { IDriver } from '../driver/driver.interface';
 import { IUser } from '../user/user.interface';
 import ApiError from '../../../errors/ApiError';
 import httpStatus from 'http-status';
+import Driver from '../driver/driver.model';
+import User from '../user/user.model';
 
 const totalCount = catchAsync(async (req: Request, res: Response) => {
   const result = await DashboardService.totalCount();
@@ -65,44 +67,57 @@ const getOverView = catchAsync(async (req: Request, res: Response) => {
 });
 
 const searchByUserName = catchAsync(async (req: Request, res: Response) => {
-  const { name } = req.query;  
+  const { name } = req.query;
   if (typeof name !== 'string') {
     return res.status(400).json({ error: 'Invalid query parameter' });
   }
-  const result = await DashboardService.getSerchUser(name); 
+  const result = await DashboardService.getSerchUser(name);
   res.status(200).json(result);
-})
+});
 
 const searchByDriverName = catchAsync(async (req: Request, res: Response) => {
-  const { name } = req.query;  
+  const { name } = req.query;
   if (typeof name !== 'string') {
     return res.status(400).json({ error: 'Invalid query parameter' });
   }
-  const result = await DashboardService.getSerchDriver(name); 
+  const result = await DashboardService.getSerchDriver(name);
   res.status(200).json(result);
-})
+});
 
 const deleteDriverById = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;    
-  const result = await DashboardService.deleteDriver(id); 
+  const { id } = req.params;
+  const result = await DashboardService.deleteDriver(id);
   res.status(200).json(result);
-})
+});
 
 const deleteUserById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await DashboardService.deleteDriver(id);
   res.status(200).json(result);
-})
- 
+});
+
+const getSingleDriver = catchAsync(async (req: Request, res: Response) => {
+  const { id: _id } = req.params;
+  const result = await Driver.findById({ _id });
+  res.status(200).json(result);
+});
+
+const getSingleUser = catchAsync(async (req: Request, res: Response) => {
+  const { id: _id } = req.params;
+  const result = await User.findById({ _id });
+  res.status(200).json(result);
+});
 
 export const DashboardController = {
   totalCount,
   getDriverGrowth,
   getAllDriver,
   getAllUsers,
-  getOverView, 
+  getOverView,
   searchByUserName,
   searchByDriverName,
   deleteDriverById,
-  deleteUserById
+  deleteUserById,
+  getSingleDriver,
+  getSingleUser,
 };

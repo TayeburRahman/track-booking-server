@@ -26,7 +26,7 @@ const UserSchema = new Schema<IUser, UserModel>(
       },
     },
     phone_number: {
-      type: String, 
+      type: String,
       // required: true,
     },
     password: {
@@ -48,8 +48,8 @@ const UserSchema = new Schema<IUser, UserModel>(
     },
     profile_image: {
       type: String,
-      default:
-        'https://res.cloudinary.com/arafatleo/image/upload/v1720600946/images_1_dz5srb.png',
+      // default:
+      //   'https://res.cloudinary.com/arafatleo/image/upload/v1720600946/images_1_dz5srb.png',
     },
 
     location: {

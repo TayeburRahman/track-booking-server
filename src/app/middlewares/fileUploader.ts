@@ -16,7 +16,7 @@ export const uploadFile = () => {
       } else if (file.fieldname === 'image') {
         uploadPath = 'uploads/images/image';
       } else if (file.fieldname === 'profile_image') {
-        uploadPath = 'uploads/images/image';
+        uploadPath = 'uploads/images/profile';
       } else if (file.fieldname === 'video') {
         uploadPath = 'uploads/video';
       } else if (file.fieldname === 'truckDocumentImage') {

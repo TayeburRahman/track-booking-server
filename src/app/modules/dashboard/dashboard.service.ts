@@ -5,6 +5,7 @@ import { IGenericResponse } from '../../../interfaces/paginations';
 import { logger } from '../../../shared/logger';
 import { IDriver } from '../driver/driver.interface';
 import Driver from '../driver/driver.model';
+import { Ratting } from '../rattings/rattings.model';
 import { IUser } from '../user/user.interface';
 
 import User from '../user/user.model';
@@ -39,7 +40,7 @@ const getDriverGrowth = async (year?: number) => {
 
     const { startDate, endDate } = getYearRange(selectedYear);
 
-    const monthlyUserGrowth = await Driver.aggregate([
+    const monthlyDriverGrowth = await Driver.aggregate([
       {
         $match: {
           createdAt: {
@@ -85,25 +86,26 @@ const getDriverGrowth = async (year?: number) => {
       'Dec',
     ];
 
-    const result = [];
-    for (let i = 1; i <= 12; i++) {
-      const monthData = monthlyUserGrowth.find(data => data.month === i) || {
-        month: i,
+    const result = Array.from({ length: 12 }, (_, i) => {
+      const monthData = monthlyDriverGrowth.find(
+        data => data.month === i + 1,
+      ) || {
+        month: i + 1,
         count: 0,
         year: selectedYear,
       };
-      result.push({
+      return {
         ...monthData,
-        month: months[i - 1],
-      });
-    }
+        month: months[i],
+      };
+    });
 
     return {
       year: selectedYear,
       data: result,
     };
   } catch (error) {
-    logger.error('Error in getMonthlyUserGrowth function: ', error);
+    logger.error('Error in getDriverGrowth function: ', error);
     throw error;
   }
 };
@@ -111,7 +113,6 @@ const getDriverGrowth = async (year?: number) => {
 const getAllDriver = async (
   query: Record<string, unknown>,
 ): Promise<IGenericResponse<IDriver[]>> => {
-  console.log('query', query);
   const driverQuery = new QueryBuilder(Driver.find(), query)
     .search(['name'])
     .filter()
@@ -119,7 +120,31 @@ const getAllDriver = async (
     .paginate()
     .fields();
 
-  const result = await driverQuery.modelQuery;
+  const drivers = await driverQuery.modelQuery;
+
+  // Aggregation to calculate average ratings
+  const driverIds = drivers.map(driver => driver._id);
+  const ratings = await Ratting.aggregate([
+    { $match: { driver: { $in: driverIds } } },
+    {
+      $group: {
+        _id: '$driver',
+        averageRating: { $avg: '$ratting' },
+      },
+    },
+  ]);
+
+  // Merge ratings with drivers
+  const result = drivers.map(driver => {
+    const rating = ratings.find(
+      r => r._id.toString() === driver._id.toString(),
+    );
+    return {
+      ...driver.toObject(),
+      averageRating: rating ? rating.averageRating : 0,
+    };
+  });
+
   const meta = await driverQuery.countTotal();
 
   return {

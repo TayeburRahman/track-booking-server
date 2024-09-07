@@ -12,7 +12,12 @@ router.get(
 );
 router.get(
   '/my-notifications',
-  auth(ENUM_USER_ROLE.USER),
+  auth(
+    ENUM_USER_ROLE.USER,
+    ENUM_USER_ROLE.DRIVER,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.SUPER_ADMIN,
+  ),
   NotificationController.myNotification,
 );
 router.patch(

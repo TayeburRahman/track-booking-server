@@ -6,6 +6,7 @@ import QueryBuilder from '../../../builder/QueryBuilder';
 
 //Get
 const getNotifications = async (query: Record<string, unknown>) => {
+  console.log('Getting');
   const notificationQuery = new QueryBuilder(
     Notification.find({ type: 'admin' }),
     query,

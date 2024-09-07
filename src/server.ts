@@ -1,49 +1,37 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import mongoose from 'mongoose';
-import { Server } from 'socket.io';
-import { app } from './app';
+import { Server as HTTPServer } from 'http'; // Import HTTPServer type
+import server from './app';
 import config from './config/index';
 import { errorLogger, logger } from './shared/logger';
-import socket from './socket/socket';
 
 process.on('uncaughtException', error => {
-  errorLogger.error(error);
+  errorLogger.error('Uncaught Exception:', error);
   process.exit(1);
 });
 
-let server: any;
+let myServer: HTTPServer | undefined;
+
 async function main() {
   try {
     await mongoose.connect(config.database_url as string);
-    logger.info('DB Connected on Successfully');
+    logger.info('DB Connected Successfully');
 
     const port =
       typeof config.port === 'number' ? config.port : Number(config.port);
-    server = app.listen(port, config.base_url as string, () => {
+    myServer = server.listen(port, config.base_url as string, () => {
       logger.info(
         `Example app listening on port http://192.168.10.152:${config.port}`,
       );
     });
-
-    const socketIO = new Server(server, {
-      pingTimeout: 60000,
-      cors: {
-        origin: '*',
-      },
-    });
-    socket(socketIO);
-    //@ts-ignore
-    global.io = socketIO;
   } catch (error) {
-    errorLogger.error(error);
+    errorLogger.error('Error in main function:', error);
     throw error;
   }
 
   process.on('unhandledRejection', error => {
-    if (server) {
-      server.close(() => {
-        errorLogger.error(error);
+    if (myServer) {
+      myServer.close(() => {
+        errorLogger.error('Unhandled Rejection:', error);
         process.exit(1);
       });
     } else {
@@ -52,11 +40,13 @@ async function main() {
   });
 }
 
-main().catch(err => errorLogger.error(err));
+main().catch(err => errorLogger.error('Main function error:', err));
 
 process.on('SIGTERM', () => {
-  logger.info('SIGTERM is received');
-  if (server) {
-    server.close();
+  logger.info('SIGTERM signal received');
+  if (myServer) {
+    myServer.close(() => {
+      logger.info('Server closed gracefully');
+    });
   }
 });
