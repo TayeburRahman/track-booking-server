@@ -44,10 +44,6 @@ const sendMessage = async (data: any, io: Server) => {
 const getMessages = async (data: any, io: Server) => {
   const { senderId, receiverId, page } = data;
 
-  if (!receiverId || !senderId) {
-    throw new ApiError(404, 'Sender or Receiver user not found');
-  }
-
   const conversation = await Conversation.findOne({
     participants: { $all: [senderId, receiverId] },
   }).populate({
@@ -83,7 +79,7 @@ const conversationUser = async (data: any, io: Server) => {
       },
     });
 
-    io.to(loginId).emit('message', conversations || []);
+    io.to(loginId).emit('get-conversation', conversations || []);
     return conversations;
   } catch (error) {
     console.error('Error fetching conversations for user:', error);

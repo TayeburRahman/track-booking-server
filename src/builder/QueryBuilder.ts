@@ -10,26 +10,26 @@ class QueryBuilder<T> {
   }
 
   search(searchableFields: string[]) {
-    const searchTerm = this?.query?.searchTerm;
-    if (searchTerm) {
-      this.modelQuery = this.modelQuery.find({
-        $or: searchableFields.map(
-          field =>
-            ({
-              [field]: { $regex: searchTerm, $options: 'i' },
-            }) as FilterQuery<T>,
-        ),
-      });
-    }
+    const name = this.query.name as string;
+
+    // Create an array of queries using regex
+    const regexQueries = searchableFields.map(field => ({
+      [field]: { $regex: new RegExp(name, 'i') },
+    }));
+
+    // Combine all regex queries with $or
+    this.modelQuery = this.modelQuery.find({
+      $or: regexQueries,
+    });
+
     return this;
   }
 
   filter() {
-    const queryObj = { ...this.query }; // copy
+    const queryObj = { ...this.query }; // Copy
 
-    // Filtering
-    const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
-
+    // Exclude fields used in other methods
+    const excludeFields = ['name', 'sort', 'limit', 'page', 'fields'];
     excludeFields.forEach(el => delete queryObj[el]);
 
     this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
@@ -39,15 +39,15 @@ class QueryBuilder<T> {
 
   sort() {
     const sort =
-      (this?.query?.sort as string)?.split(',')?.join(' ') || '-createdAt';
+      (this.query.sort as string)?.split(',')?.join(' ') || '-createdAt';
     this.modelQuery = this.modelQuery.sort(sort as string);
 
     return this;
   }
 
   paginate() {
-    const page = Number(this?.query?.page) || 1;
-    const limit = Number(this?.query?.limit) || 9;
+    const page = Number(this.query.page) || 1;
+    const limit = Number(this.query.limit) || 10;
     const skip = (page - 1) * limit;
 
     this.modelQuery = this.modelQuery.skip(skip).limit(limit);
@@ -56,16 +56,17 @@ class QueryBuilder<T> {
 
   fields() {
     const fields =
-      (this?.query?.fields as string)?.split(',')?.join(' ') || '-__v';
+      (this.query.fields as string)?.split(',')?.join(' ') || '-__v';
 
     this.modelQuery = this.modelQuery.select(fields);
     return this;
   }
+
   async countTotal() {
     const totalQueries = this.modelQuery.getFilter();
     const total = await this.modelQuery.model.countDocuments(totalQueries);
-    const page = Number(this?.query?.page) || 1;
-    const limit = Number(this?.query?.limit) || 10;
+    const page = Number(this.query.page) || 1;
+    const limit = Number(this.query.limit) || 10;
     const totalPage = Math.ceil(total / limit);
 
     return {

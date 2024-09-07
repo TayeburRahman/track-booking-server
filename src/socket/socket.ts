@@ -114,6 +114,7 @@ io.on('connection', async (socket: Socket) => {
         try {
           await messageService.sendMessage(data, io);
         } catch (err) {
+          socket.emit('error', { message: err });
           console.error('Error sending new message:', err);
         }
       },
@@ -124,7 +125,13 @@ io.on('connection', async (socket: Socket) => {
       'get-message',
       async (data: { senderId: string; receiverId: string; page: string }) => {
         try {
-          await messageService.getMessages(data, io);
+          if (!data.receiverId || !data.senderId) {
+            socket.emit('error', {
+              message: 'Sender or Receiver user not found',
+            });
+          } else {
+            await messageService.getMessages(data, io);
+          }
         } catch (err) {
           console.error('Error sending new message:', err);
         }
@@ -136,8 +143,9 @@ io.on('connection', async (socket: Socket) => {
       try {
         if (data?.loginId) {
           await messageService.conversationUser(data, io);
+        } else {
+          socket.emit('error', { message: 'Login ID is required' });
         }
-        return;
       } catch (err) {
         console.error('Error sending new message:', err);
       }
