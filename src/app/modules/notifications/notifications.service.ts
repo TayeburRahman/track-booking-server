@@ -6,7 +6,6 @@ import QueryBuilder from '../../../builder/QueryBuilder';
 
 //Get
 const getNotifications = async (query: Record<string, unknown>) => {
-  console.log('Getting');
   const notificationQuery = new QueryBuilder(
     Notification.find({ type: 'admin' }),
     query,
@@ -58,12 +57,34 @@ const updateAll = async () => {
   return result;
 };
 
-const myNotification = async (
+const userNotification = async (
+  user: IReqUser,
+  query: Record<string, unknown>,
+) => {
+  const notificationQuery = await Notification.find({ user: user.userId });
+
+  return {
+    data: notificationQuery.reverse(),
+  };
+};
+
+const driverNotification = async (
+  user: IReqUser,
+  query: Record<string, unknown>,
+) => {
+  const notificationQuery = await Notification.find({ driver: user.userId });
+
+  return {
+    data: notificationQuery,
+  };
+};
+
+const adminNotification = async (
   user: IReqUser,
   query: Record<string, unknown>,
 ) => {
   const notificationQuery = new QueryBuilder(
-    Notification.find({ user: user.userId }),
+    Notification.find({ admin: user.userId }),
     query,
   )
     .search(['title'])
@@ -81,9 +102,34 @@ const myNotification = async (
   };
 };
 
+// const driverNotification = async (data: any, io: Server) => {
+//   try {
+//     const { driverId } = data;
+//     const notificationQuery = await Notification.find({
+//       user: data.userId,
+//     }).populate('user');
+
+//     // io.to(driverId).emit(
+//     //   'get-driver-all-notification',
+//     //   notificationQuery || [],
+//     // );
+
+//     // return {
+//     //   data: notificationQuery,
+//     // };
+//   } catch (error) {
+//     console.error('Error fetching notifications:', error);
+//     // return {
+//     //   error: 'Failed to retrieve notifications.',
+//     // };
+//   }
+// };
+
 export const NotificationService = {
   getNotifications,
   updateNotification,
-  myNotification,
+  userNotification,
   updateAll,
+  driverNotification,
+  adminNotification,
 };

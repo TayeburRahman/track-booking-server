@@ -55,16 +55,6 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 });
 
 // ---------------
-const getOverView = catchAsync(async (req: Request, res: Response) => {
-  const result = await DashboardService.getOverView();
-  sendResponse<IUser[]>(res, {
-    statusCode: 200,
-    success: true,
-    message: 'Users retrieved successfully',
-    // data: result.data,
-    // meta: result.meta,
-  });
-});
 
 const searchByUserName = catchAsync(async (req: Request, res: Response) => {
   const { name } = req.query;
@@ -113,7 +103,6 @@ export const DashboardController = {
   getDriverGrowth,
   getAllDriver,
   getAllUsers,
-  getOverView,
   searchByUserName,
   searchByDriverName,
   deleteDriverById,

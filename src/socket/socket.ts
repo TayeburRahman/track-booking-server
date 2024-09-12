@@ -6,6 +6,7 @@ import User from '../app/modules/user/user.model';
 import getUserDetailsFromToken from '../helpers/getUserDetailsFromToken';
 import Conversation from '../app/modules/messages/conversation.model';
 import { messageService } from '../app/modules/messages/message.service';
+import { NotificationService } from '../app/modules/notifications/notifications.service';
 
 // Define types for data payloads and responses
 interface UserDetails {
@@ -32,18 +33,22 @@ export const server: HTTPServer = http.createServer(app);
 // Initialize Socket.IO server with CORS configuration
 const io = new SocketIOServer(server, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin: 'http://localhost:5173',
     credentials: true,
   },
 });
 
+//@ts-ignore
+global.io = io;
+
 io.on('connection', async (socket: Socket) => {
   try {
-    const token = socket.handshake.auth.token as string;
+    const token = socket?.handshake?.auth?.token as string;
     const currentUser: any = await getUserDetailsFromToken(token);
 
     if (!currentUser) {
       socket.disconnect();
+      console.log(`Check token disconnected`);
       return;
     }
 
@@ -52,6 +57,8 @@ io.on('connection', async (socket: Socket) => {
     // Join room based on user ID
     socket.join(senderId);
     onlineUser.add(senderId);
+
+    // console.log('currentUser', senderId);
 
     // Broadcast online users
     io.emit('onlineUser', Array.from(onlineUser));
@@ -150,6 +157,19 @@ io.on('connection', async (socket: Socket) => {
         console.error('Error sending new message:', err);
       }
     });
+
+    // Handle GET CONVERSATION LIST event: 'get-conversation'
+    // socket.on('get-user-all-notification', async (data: { userId: string }) => {
+    //   try {
+    //     if (data?.userId) {
+    //       await NotificationService.myNotification(data, io);
+    //     } else {
+    //       socket.emit('error', { message: 'User ID is required' });
+    //     }
+    //   } catch (err) {
+    //     console.error('Error sending new message:', err);
+    //   }
+    // });
 
     // Handle user disconnect
     socket.on('disconnect', () => {

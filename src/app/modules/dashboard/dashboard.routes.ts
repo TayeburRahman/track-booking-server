@@ -24,12 +24,6 @@ router.get(
   DashboardController.getDriverGrowth,
 );
 
-// ----------------------
-router.get(
-  '/overview',
-  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
-  DashboardController.getOverView,
-);
 router.get(
   '/search-user',
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),

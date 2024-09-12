@@ -9,93 +9,62 @@ import Trip from './trip.model';
 import Driver from '../driver/driver.model';
 import Notification from '../notifications/notifications.model';
 import { Ratting } from '../rattings/rattings.model';
+// const http = require('http');
+// const express = require('express');
+// const socketIo = require('socket.io');
+// const app = express();
+// const server = http.createServer(app);
+// const io = socketIo(server);
 
 const insertIntoDB = async (req: Request) => {
   const { userId } = req.user as IReqUser;
   const tripData = req.body as ITrip;
-  const isExistUser = await User.findById(userId);
-  if (!isExistUser) {
+
+  const user = await User.findById(userId);
+  if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  const result = await Trip.create({
+
+  const newTrip = await Trip.create({
     ...tripData,
     user: userId,
   });
 
-  console.log('add', result);
-
-  if (result) {
-    const notificationMessage = `You have a new trip request from ${tripData.pickup} to ${tripData.to}.`;
-    const notification = await Notification.create({
-      title: 'New Trip Has Arrived',
-      driver: tripData?.driver,
+  if (newTrip) {
+    const userNotification = await Notification.create({
+      title: 'New Trip Request Sent',
+      driver: tripData.driver,
       user: userId,
-      message: notificationMessage,
+      message: 'You have successfully sent a new trip request!',
     });
 
+    const driverNotification = await Notification.create({
+      title: 'New Trip Request!',
+      driver: tripData.driver,
+      user: userId,
+      message: `You have a new trip request from ${tripData.pickup} to ${tripData.to}.`,
+    });
     //@ts-ignore
-    const socketIo = global.io;
-    if (socketIo) {
-      socketIo.emit(`notification::${tripData?.driver}`, notification);
-      socketIo.emit(`trips::${tripData?.driver}`, result);
+    if (global.io) {
+      //@ts-ignore
+      const socketIo = global.io;
+
+      socketIo.to(userId.toString()).emit('notification', userNotification);
+      socketIo
+        .to(tripData.driver.toString())
+        .emit('notification', driverNotification);
+    } else {
+      console.error('Socket.IO is not initialized');
     }
 
-    return result;
+    return newTrip;
   } else {
-    return {
-      message: 'Trip not send',
-    };
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Trip could not be created',
+    );
   }
 };
-
-// const insertIntoDB = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction,
-// ) => {
-//   const session = await mongoose.startSession();
-//   session.startTransaction();
-
-//   try {
-//     const { userId } = req.user as IReqUser;
-//     const tripData = req.body as ITrip;
-
-//     const isExistUser = await User.findById(userId).session(session);
-//     if (!isExistUser) {
-//       throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
-//     }
-
-//     const result = await Trip.create([{ ...tripData, user: userId }], {
-//       session,
-//     });
-//     if (!result) {
-//       throw new ApiError(
-//         httpStatus.INTERNAL_SERVER_ERROR,
-//         'Trip creation failed',
-//       );
-//     }
-//     const notificationMessage = `You have a new trip request from ${tripData.pickup} to ${tripData.destination}.`;
-//     await Notification.create(
-//       [
-//         {
-//           driver: tripData.driver,
-//           user: userId,
-//           message: notificationMessage,
-//         },
-//       ],
-//       { session },
-//     );
-
-//     await session.commitTransaction();
-//     session.endSession();
-
-//     res.status(httpStatus.CREATED).json(result[0]);
-//   } catch (error) {
-//     await session.abortTransaction();
-//     session.endSession();
-//     next(error);
-//   }
-// };
 
 const driverTripHistory = async (req: Request) => {
   const { userId } = req.user as IReqUser;
@@ -130,7 +99,6 @@ const usersTrip = async (req: Request) => {
 
     const query: any = { user: userId };
 
-    // Determine the status filter based on the query parameter 'st'
     if (status === 'current') {
       query.acceptStatus = { $in: ['pending', 'accepted'] };
     } else if (status === 'history') {
@@ -175,69 +143,165 @@ const myTripRequests = async (req: Request) => {
 
 const acceptTrip = async (req: Request) => {
   const { id } = req.params;
-  const isExistTrip = await Trip.findById(id);
-  if (!isExistTrip) {
+  const { userId } = req.user as IReqUser;
+
+  const trip = await Trip.findById(id);
+  if (!trip) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Trip not found');
   }
-  if (isExistTrip.acceptStatus === 'accepted') {
-    throw new ApiError(httpStatus.CONFLICT, 'Already accepted');
+
+  if (trip.acceptStatus === 'accepted') {
+    throw new ApiError(httpStatus.CONFLICT, 'Trip already accepted');
   }
-  return await Trip.findByIdAndUpdate(
+
+  const updatedTrip = await Trip.findByIdAndUpdate(
     id,
     { acceptStatus: 'accepted' },
-    {
-      new: true,
-      runValidators: true,
-    },
+    { new: true, runValidators: true },
   );
+
+  if (updatedTrip) {
+    const userNotification = await Notification.create({
+      title: 'Your Trip Accepted',
+      driver: updatedTrip.driver,
+      user: updatedTrip.user,
+      message: 'Your trip request has been accepted by the driver.',
+    });
+
+    const driverNotification = await Notification.create({
+      title: 'New Trip Started.',
+      driver: updatedTrip.driver,
+      user: userId,
+      message: `Your new trip has started from ${updatedTrip.pickup} to ${updatedTrip.to}.`,
+    });
+
+    //@ts-ignore
+    if (global.io) {
+      //@ts-ignore
+      const socketIo = global.io;
+
+      socketIo
+        .to(updatedTrip.user.toString())
+        .emit('notification', userNotification);
+      socketIo
+        .to(updatedTrip.driver.toString())
+        .emit('notification', driverNotification);
+    } else {
+      console.error('Socket.IO is not initialized');
+    }
+  }
+
+  return updatedTrip;
 };
 
 const endTrip = async (req: Request) => {
   const { id } = req.params;
-  const isExistTrip = await Trip.findById(id);
-  if (!isExistTrip) {
+  const { userId } = req.user as IReqUser;
+
+  const trip = await Trip.findById(id);
+  if (!trip) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Trip not found');
   }
-  if (isExistTrip.acceptStatus === 'end') {
-    throw new ApiError(httpStatus.CONFLICT, 'Already ended');
+
+  if (trip.acceptStatus === 'end') {
+    throw new ApiError(httpStatus.CONFLICT, 'Trip already ended');
   }
-  const result = await Trip.findByIdAndUpdate(
+
+  const updatedTrip = await Trip.findByIdAndUpdate(
     id,
     { acceptStatus: 'end' },
-    {
-      new: true,
-      runValidators: true,
-    },
+    { new: true, runValidators: true },
   );
-  const isReview = true;
-  //@ts-ignore
-  const socketIo = global.io;
-  if (socketIo) {
-    socketIo.emit(`endTrip::${isReview}`);
+
+  if (updatedTrip) {
+    const userNotification = await Notification.create({
+      title: 'Trip Successfully Completed',
+      driver: updatedTrip.driver,
+      user: updatedTrip.user,
+      message:
+        'Your trip has been successfully completed. Thank you for using our service.',
+    });
+
+    const driverNotification = await Notification.create({
+      title: 'Trip Successfully Completed',
+      driver: updatedTrip.driver,
+      user: userId,
+      message:
+        'Your trip has been successfully completed. Thank you for your excellent service!',
+    });
+
+    //@ts-ignore
+    if (global.io) {
+      //@ts-ignore
+      const socketIo = global.io;
+
+      socketIo
+        .to(updatedTrip.user.toString())
+        .emit('notification', userNotification);
+      socketIo
+        .to(updatedTrip.driver.toString())
+        .emit('notification', driverNotification);
+    } else {
+      console.error('Socket.IO is not initialized');
+    }
   }
-  return result;
+
+  return updatedTrip;
 };
 
 const cancelTrip = async (req: Request) => {
   const { id } = req.params;
-  const isExistTrip = await Trip.findById(id);
+  const { userId } = req.user as IReqUser;
 
-  if (!isExistTrip) {
+  const trip = await Trip.findById(id);
+  if (!trip) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Trip not found');
   }
 
-  if (isExistTrip.acceptStatus === 'cancel') {
-    throw new ApiError(httpStatus.CONFLICT, 'Already canceled');
+  if (trip.acceptStatus === 'cancel') {
+    throw new ApiError(httpStatus.CONFLICT, 'Trip already canceled');
   }
 
-  return await Trip.findByIdAndUpdate(
+  const updatedTrip = await Trip.findByIdAndUpdate(
     id,
     { acceptStatus: 'cancel' },
-    {
-      new: true,
-      runValidators: true,
-    },
+    { new: true, runValidators: true },
   );
+
+  if (updatedTrip) {
+    const userNotification = await Notification.create({
+      title: 'Trip Canceled',
+      driver: updatedTrip.driver,
+      user: updatedTrip.user,
+      message:
+        'Your trip has been canceled by the driver. Please find another driver.',
+    });
+
+    const driverNotification = await Notification.create({
+      title: 'Trip Canceled',
+      driver: updatedTrip.driver,
+      user: userId,
+      message:
+        'The trip has been canceled. Please review your schedule and check for new trip requests.',
+    });
+
+    //@ts-ignore
+    if (global.io) {
+      //@ts-ignore
+      const socketIo = global.io;
+
+      socketIo
+        .to(updatedTrip.user.toString())
+        .emit('notification', userNotification);
+      socketIo
+        .to(updatedTrip.driver.toString())
+        .emit('notification', driverNotification);
+    } else {
+      console.error('Socket.IO is not initialized');
+    }
+  }
+
+  return updatedTrip;
 };
 
 const searchTrip = async () => {

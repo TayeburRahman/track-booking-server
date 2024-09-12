@@ -427,6 +427,7 @@ const deleteAdmin = async (id: string) => {
 
   return result;
 };
+
 export const AdminService = {
   createUser,
   getAllUsers,

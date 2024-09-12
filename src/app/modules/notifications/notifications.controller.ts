@@ -42,9 +42,39 @@ const updateAll: RequestHandler = catchAsync(
   },
 );
 
-const myNotification: RequestHandler = catchAsync(
+const userNotification: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    const result = await NotificationService.myNotification(
+    const result = await NotificationService.userNotification(
+      req.user as IReqUser,
+      req.query,
+    );
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: `Notification retrieved successfully`,
+      data: result,
+    });
+  },
+);
+
+const driverNotification: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await NotificationService.driverNotification(
+      req.user as IReqUser,
+      req.query,
+    );
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: `Notification retrieved successfully`,
+      data: result,
+    });
+  },
+);
+
+const adminNotification: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await NotificationService.adminNotification(
       req.user as IReqUser,
       req.query,
     );
@@ -60,6 +90,8 @@ const myNotification: RequestHandler = catchAsync(
 export const NotificationController = {
   getNotifications,
   updateNotification,
-  myNotification,
+  userNotification,
   updateAll,
+  adminNotification,
+  driverNotification,
 };

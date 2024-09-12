@@ -4,6 +4,8 @@ import Conversation from './conversation.model';
 import Message from './message.model';
 import ApiError from '../../../errors/ApiError';
 import { Server } from 'socket.io';
+import User from '../user/user.model';
+import Driver from '../driver/driver.model';
 
 //* One to one conversation
 const sendMessage = async (data: any, io: Server) => {
@@ -69,18 +71,65 @@ const conversationUser = async (data: any, io: Server) => {
   const { loginId } = data;
 
   try {
-    const conversations: any = await Conversation.find({
+    const conversations = await Conversation.find({
       participants: { $in: [loginId] },
     }).populate({
       path: 'messages',
       options: {
         sort: { createdAt: 1 },
-        limit: 2,
+        limit: 1,
       },
     });
 
-    io.to(loginId).emit('get-conversation', conversations || []);
-    return conversations;
+    const updatedConversations = conversations.map(convo => {
+      const filteredParticipants = convo.participants.filter(
+        participantId => participantId.toString() !== loginId,
+      );
+
+      return {
+        ...convo.toObject(),
+        participants: filteredParticipants,
+      };
+    });
+
+    const participantIds = updatedConversations.flatMap(
+      convo => convo.participants,
+    );
+    const users = await User.find({
+      _id: { $in: participantIds },
+    }).select('_id name email, profile_image');
+
+    const drivers = await Driver.find({
+      _id: { $in: participantIds },
+    }).select('_id name email profile_image');
+
+    const participantMap: any = {};
+    users.forEach(user => {
+      participantMap[user._id.toString()] = {
+        ...user.toObject(),
+        type: 'User',
+      };
+    });
+    drivers.forEach(driver => {
+      participantMap[driver._id.toString()] = {
+        ...driver.toObject(),
+        type: 'Driver',
+      };
+    });
+    const conversationsWithParticipants = updatedConversations.map(convo => ({
+      ...convo,
+      participants: convo.participants.map(
+        participantId => participantMap[participantId.toString()],
+      ),
+    }));
+
+    // Emit the result to the socket
+    io.to(loginId).emit(
+      'get-conversation',
+      conversationsWithParticipants || [],
+    );
+
+    return conversationsWithParticipants;
   } catch (error) {
     console.error('Error fetching conversations for user:', error);
     throw error;

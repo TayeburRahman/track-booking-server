@@ -8,5 +8,6 @@ export type INotification = {
   status: boolean;
   user: Types.ObjectId | IUser;
   driver: Types.ObjectId | IDriver;
+  admin: Types.ObjectId | IDriver;
   type: 'user' | 'admin' | 'driver';
 };

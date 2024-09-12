@@ -14,7 +14,7 @@ const locationSchema = new Schema<Ilocation>({
   },
   address: {
     type: String,
-    required: true,
+    // required: true,
   },
 });
 
@@ -51,8 +51,8 @@ const driverSchema = new Schema<IDriver>(
     },
     profile_image: {
       type: String,
-      default:
-        'https://res.cloudinary.com/arafatleo/image/upload/v1720600946/images_1_dz5srb.png',
+      // default:
+      //   'https://res.cloudinary.com/arafatleo/image/upload/v1720600946/images_1_dz5srb.png',
     },
     licenseFrontImage: {
       type: String,

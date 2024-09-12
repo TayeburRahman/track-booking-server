@@ -3,6 +3,7 @@ import { Model } from 'mongoose';
 type MonthData = {
   month: string;
   count: number;
+  date: string;
 };
 
 //! Generate last 12 month
@@ -58,6 +59,10 @@ export async function generatedLast12MonthData<T>(
     startDate.setMonth(endDate.getMonth() - 1);
 
     const monthYear = endDate.toLocaleString('default', {
+      month: 'short',
+    });
+
+    const date = endDate.toLocaleString('default', {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
@@ -70,7 +75,7 @@ export async function generatedLast12MonthData<T>(
       },
     });
 
-    last12MonthsData.push({ month: monthYear, count });
+    last12MonthsData.push({ month: monthYear, date: date, count });
   }
 
   return { last12MonthsData };
@@ -143,6 +148,10 @@ export async function generateLastMonthsData<T>(
     endDateOfMonth.setMonth(endDate.getMonth() + i);
 
     const monthYear = endDateOfMonth.toLocaleString('default', {
+      month: 'short',
+    });
+
+    const date = endDateOfMonth.toLocaleString('default', {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
@@ -155,7 +164,7 @@ export async function generateLastMonthsData<T>(
       },
     });
 
-    lastMonthsData.push({ month: monthYear, count });
+    lastMonthsData.push({ month: monthYear, date: date, count });
   }
 
   return { lastMonthsData };

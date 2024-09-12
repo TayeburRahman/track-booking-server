@@ -8,9 +8,13 @@ const paymentSchema = new Schema<IPayment>(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    plan_id: {
+    driver: {
       type: Schema.Types.ObjectId,
-      ref: 'Subscription',
+      ref: 'Driver',
+    },
+    trip_id: {
+      type: Schema.Types.ObjectId,
+      ref: 'Trip',
     },
     amount: Number,
     transaction_id: String,

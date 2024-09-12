@@ -43,4 +43,9 @@ export default {
   stripe: {
     stripe_secret_key: process.env.STRIPE_SECRET_KEY,
   },
+  paypal: {
+    paypal_secret_key: process.env.PAYPAL_SECRET,
+    paypal_client_id: process.env.PAYPAL_CID,
+    PAYPAL_BASE_URL: process.env.PAYPAL_BASE_URL,
+  },
 };

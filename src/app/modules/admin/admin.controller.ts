@@ -26,7 +26,6 @@ const registrationUser: RequestHandler = catchAsync(
 const createUser: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const { ...userData } = req.body;
-
     const result = await AdminService.createUser(userData);
 
     sendResponse(res, {
@@ -147,6 +146,7 @@ const myProfile = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const forgotPass = catchAsync(async (req: Request, res: Response) => {
   await AdminService.forgotPass(req.body);
 
@@ -156,6 +156,7 @@ const forgotPass = catchAsync(async (req: Request, res: Response) => {
     message: 'Check your email!',
   });
 });
+
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
   // const token = req.headers.authorization || '';
   await AdminService.resetPassword(req.body);

@@ -34,6 +34,7 @@ import { ENUM_USER_ROLE } from '../../../enums/user';
 import { sendResetEmail } from '../auth/sendResetMails';
 import { userSearchableField } from './user.constants';
 import { logger } from '../../../shared/logger';
+import Notification from '../notifications/notifications.model';
 
 //!
 const registrationUser = async (payload: IRegistration) => {
@@ -116,6 +117,7 @@ const activateUser = async (payload: IActivationRequest) => {
     config.jwt.refresh_secret as Secret,
     config.jwt.refresh_expires_in as string,
   );
+
   return {
     accessToken,
     refreshToken,
@@ -190,8 +192,6 @@ const updateProfile = async (req: Request): Promise<IUser | null> => {
     throw new Error('Data is missing in the request body!');
   }
 
-  // const parsedData = JSON.parse(data);
-
   const isExist = await User.findOne({ _id: userId });
 
   if (!isExist) {
@@ -209,6 +209,7 @@ const updateProfile = async (req: Request): Promise<IUser | null> => {
       new: true,
     },
   );
+
   return result;
 };
 //!
@@ -308,6 +309,21 @@ const changePassword = async (
   }
   isUserExist.password = newPassword;
   await isUserExist.save();
+
+  const userNotification = await Notification.create({
+    title: 'Change password success.',
+    user: userId,
+    message: 'Change your account password successfully!',
+  });
+
+  //@ts-ignore
+  if (global.io) {
+    //@ts-ignore
+    const socketIo = global.io;
+    socketIo.to(userId).emit('notification', userNotification);
+  } else {
+    console.error('Socket.IO is not initialized');
+  }
 };
 
 //!
@@ -442,6 +458,21 @@ const resetPassword = async (req: Request) => {
   user.verifyCode = null;
   user.verifyExpire = null;
   await user.save();
+
+  const userNotification = await Notification.create({
+    title: 'Password reset Successfully.',
+    user: userId,
+    message: 'Your account password has been changes successfully!',
+  });
+
+  //@ts-ignore
+  if (global.io) {
+    //@ts-ignore
+    const socketIo = global.io;
+    socketIo.to(userId).emit('notification', userNotification);
+  } else {
+    console.error('Socket.IO is not initialized');
+  }
 };
 
 const blockUser = async (id: string): Promise<IUser | null> => {

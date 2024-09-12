@@ -16,6 +16,7 @@ interface DecodePayload extends JwtPayload {
 const getUserDetailsFromToken = async (
   token: string | undefined,
 ): Promise<Document | null> => {
+  // console.log('getUserDetailsFromToken', token);
   if (!token) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid token');
   }

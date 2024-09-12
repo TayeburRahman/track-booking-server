@@ -23,7 +23,6 @@ const totalUserAndEarning = async () => {
       totalUser,
       totalEarnings,
     };
-    
   } catch (error) {
     logger.error('Error fetching dashboard overview:', error);
     throw new Error('Unable to fetch dashboard overview');

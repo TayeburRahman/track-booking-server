@@ -173,7 +173,6 @@ const getAllUsers = async (
 };
 
 // -------------------
-const getOverView = async () => {};
 
 const getSerchUser = async (name: string) => {
   const result = await User.find({ name: { $regex: new RegExp(name, 'i') } });
@@ -208,7 +207,6 @@ export const DashboardService = {
   getDriverGrowth,
   getAllDriver,
   getAllUsers,
-  getOverView,
   getSerchUser,
   getSerchDriver,
   deleteDriver,

@@ -11,14 +11,19 @@ router.get(
   NotificationController.getNotifications,
 );
 router.get(
-  '/my-notifications',
-  auth(
-    ENUM_USER_ROLE.USER,
-    ENUM_USER_ROLE.DRIVER,
-    ENUM_USER_ROLE.ADMIN,
-    ENUM_USER_ROLE.SUPER_ADMIN,
-  ),
-  NotificationController.myNotification,
+  '/user/all_notifications',
+  auth(ENUM_USER_ROLE.USER),
+  NotificationController.userNotification,
+);
+router.get(
+  '/admin/all_notifications',
+  auth(ENUM_USER_ROLE.ADMIN),
+  NotificationController.adminNotification,
+);
+router.get(
+  '/driver/all_notifications',
+  auth(ENUM_USER_ROLE.DRIVER),
+  NotificationController.driverNotification,
 );
 router.patch(
   '/update-notification',

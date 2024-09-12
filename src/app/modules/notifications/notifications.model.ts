@@ -11,6 +11,10 @@ const notificationSchema = new Schema<INotification>(
       type: Schema.Types.ObjectId,
       ref: 'Driver',
     },
+    admin: {
+      type: Schema.Types.ObjectId,
+      ref: 'Admin',
+    },
     title: {
       type: String,
       required: true,

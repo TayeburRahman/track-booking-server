@@ -420,6 +420,7 @@ const checkIsValidForgetActivationCode = async (payload: {
   code: string;
   email: string;
 }) => {
+  console.log('wefnjdksngf', payload.code, payload.email);
   const user = await Driver.findOne({ email: payload.email });
 
   if (!user) {
@@ -485,16 +486,9 @@ const truckLocationUpdate = async (req: Request): Promise<IDriver | null> => {
   const { id } = req.params;
   const { latitude, longitude, address }: Ilocation = req.body;
 
-  if (
-    !id ||
-    latitude === undefined ||
-    longitude === undefined ||
-    address === undefined
-  ) {
+  if (!id || latitude === undefined || longitude === undefined) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid request parameters');
   }
-
-  console.log('address', address);
 
   const updatedDriver = await Driver.findByIdAndUpdate(
     id,
