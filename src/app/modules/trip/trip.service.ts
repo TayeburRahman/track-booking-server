@@ -79,7 +79,10 @@ const driverTripHistory = async (req: Request) => {
   }
   const trips = await Trip.find(query)
     .sort({ createdAt: -1 })
-    .populate({ path: 'driver', select: '_id name email role profile_image' })
+    .populate({
+      path: 'driver',
+      select: '_id name email role profile_image location',
+    })
     .populate({
       path: 'user',
       select: '_id name email role profile_image phoneNumber',
@@ -109,7 +112,10 @@ const usersTrip = async (req: Request) => {
 
     const trips = await Trip.find(query)
       .sort({ createdAt: -1 })
-      .populate({ path: 'driver', select: '_id name email role profile_image' })
+      .populate({
+        path: 'driver',
+        select: '_id name email role profile_image location',
+      })
       .populate({
         path: 'user',
         select: '_id name email role profile_image phoneNumber',

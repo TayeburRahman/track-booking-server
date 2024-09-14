@@ -59,7 +59,7 @@ io.on('connection', async (socket: Socket) => {
     socket.join(senderId);
     onlineUser.add(senderId);
 
-    // console.log('currentUser', senderId);
+    console.log('currentUser', senderId);
 
     // Broadcast online users
     io.emit('onlineUser', Array.from(onlineUser));
