@@ -14,7 +14,7 @@ const TripSchema = new mongoose.Schema<ITrip>(
       required: true,
     },
     pickup: {
-      type: String, 
+      type: String,
     },
     from: {
       type: String,
@@ -44,6 +44,14 @@ const TripSchema = new mongoose.Schema<ITrip>(
     fee: {
       type: Number,
       required: true,
+    },
+    order_id: {
+      type: String,
+    },
+    payment: {
+      type: String,
+      enum: ['pending', 'complete'],
+      default: 'pending',
     },
     acceptStatus: {
       type: String,

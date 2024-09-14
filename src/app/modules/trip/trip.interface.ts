@@ -14,4 +14,6 @@ export type ITrip = {
   distance: number;
   fee: number;
   acceptStatus: 'pending' | 'accepted' | 'end' | 'cancel';
+  order_id: string;
+  payment: 'pending' | 'complete';
 };

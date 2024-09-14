@@ -503,10 +503,17 @@ const truckLocationUpdate = async (req: Request): Promise<IDriver | null> => {
 
 const truckLocation = async (id: string): Promise<IDriver | null> => {
   const result = await Driver.findById(id);
+
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, 'No Driver Found');
   }
-  return result;
+
+  const formattedData: any = {
+    location: result.location,
+    name: result.name,
+  };
+
+  return formattedData;
 };
 
 const allTruckLocation = async () => {
@@ -554,6 +561,33 @@ const getDriversSortedByDistance = async (req: Request): Promise<IDriver[]> => {
   return driversWithDistance;
 };
 
+const getDriverLocation = async (data: any) => {
+  const { driverId } = data;
+
+  const findDriver: any = await Driver.findById(driverId);
+
+  if (!findDriver) {
+    throw new Error('Driver not found');
+  }
+
+  const formattedData = {
+    location: findDriver.location,
+    name: findDriver.name,
+  };
+
+  //@ts-ignore
+  if (global.io) {
+    //@ts-ignore
+    const socketIo = global.io;
+
+    socketIo.to(driverId.toString()).emit('driver-location', formattedData);
+  } else {
+    console.error('Socket.IO is not initialized');
+  }
+
+  return formattedData;
+};
+
 export const DriverService = {
   getAllDriver,
   getSingleDriver,
@@ -573,4 +607,5 @@ export const DriverService = {
   truckLocationUpdate,
   allTruckLocation,
   getDriversSortedByDistance,
+  getDriverLocation,
 };

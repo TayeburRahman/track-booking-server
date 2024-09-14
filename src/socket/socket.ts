@@ -7,6 +7,7 @@ import getUserDetailsFromToken from '../helpers/getUserDetailsFromToken';
 import Conversation from '../app/modules/messages/conversation.model';
 import { messageService } from '../app/modules/messages/message.service';
 import { NotificationService } from '../app/modules/notifications/notifications.service';
+import { DriverService } from '../app/modules/driver/driver.service';
 
 // Define types for data payloads and responses
 interface UserDetails {
@@ -126,6 +127,15 @@ io.on('connection', async (socket: Socket) => {
         }
       },
     );
+
+    socket.on('driver-location', async (data: { driverId: string }) => {
+      try {
+        await DriverService.getDriverLocation(data);
+      } catch (err) {
+        socket.emit('error', { message: err });
+        console.error('Error sending new message:', err);
+      }
+    });
 
     // Handle GET MASSAGE event: 'get-message'
     socket.on(

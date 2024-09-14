@@ -78,7 +78,6 @@ router.get(
 );
 
 router.patch('/:id/location', DriverController.truckLocationUpdate);
-
 router.get('/:id/location', DriverController.truckLocation);
 
 router.post(
