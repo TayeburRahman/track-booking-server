@@ -128,14 +128,17 @@ io.on('connection', async (socket: Socket) => {
       },
     );
 
-    socket.on('driver-location', async (data: { driverId: string }) => {
-      try {
-        await DriverService.getDriverLocation(data);
-      } catch (err) {
-        socket.emit('error', { message: err });
-        console.error('Error sending new message:', err);
-      }
-    });
+    socket.on(
+      'location',
+      async (data: { driverId: string; userId: string }) => {
+        try {
+          await DriverService.getDriverLocation(data);
+        } catch (err) {
+          socket.emit('error', { message: err });
+          console.error('Error sending new message:', err);
+        }
+      },
+    );
 
     // Handle GET MASSAGE event: 'get-message'
     socket.on(

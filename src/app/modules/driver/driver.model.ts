@@ -120,6 +120,10 @@ const driverSchema = new Schema<IDriver>(
     activationCode: {
       type: String,
     },
+    current_trip_user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
     verifyExpire: {
       type: Date,
     },

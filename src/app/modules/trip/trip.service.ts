@@ -160,11 +160,20 @@ const acceptTrip = async (req: Request) => {
     throw new ApiError(httpStatus.CONFLICT, 'Trip already accepted');
   }
 
-  const updatedTrip = await Trip.findByIdAndUpdate(
+  const updatedTrip: any = await Trip.findByIdAndUpdate(
     id,
     { acceptStatus: 'accepted' },
     { new: true, runValidators: true },
   );
+
+  // console.log('--updatedTrip.driver--', updatedTrip.driver, userId);
+
+  // const updated = await Driver.findByIdAndUpdate(
+  //   updatedTrip.driver,
+  //   { current_trip_user: updatedTrip.user },
+  //   { new: true, runValidators: true },
+  // );
+  // console.log('--update--', updated);
 
   if (updatedTrip) {
     const userNotification = await Notification.create({
@@ -177,7 +186,7 @@ const acceptTrip = async (req: Request) => {
     const driverNotification = await Notification.create({
       title: 'New Trip Started.',
       driver: updatedTrip.driver,
-      user: userId,
+      user: updatedTrip.user,
       message: `Your new trip has started from ${updatedTrip.pickup} to ${updatedTrip.to}.`,
     });
 

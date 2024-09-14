@@ -23,8 +23,8 @@ import { IActivationRequest, IDriver, Ilocation } from './driver.interface';
 import Driver from './driver.model';
 import { IReqUser } from '../user/user.interface';
 import { CustomRequest } from '../../../interfaces/common';
-import { error } from 'winston';
 import { haversineDistance } from './driver.help';
+import Trip from '../trip/trip.model';
 
 //!
 const registerDriver = async (req: CustomRequest) => {
@@ -486,10 +486,12 @@ const truckLocationUpdate = async (req: Request): Promise<IDriver | null> => {
   const { id } = req.params;
   const { latitude, longitude, address }: Ilocation = req.body;
 
+  // Validate parameters
   if (!id || latitude === undefined || longitude === undefined) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid request parameters');
   }
 
+  // Update driver location
   const updatedDriver = await Driver.findByIdAndUpdate(
     id,
     {
@@ -497,6 +499,25 @@ const truckLocationUpdate = async (req: Request): Promise<IDriver | null> => {
     },
     { new: true },
   );
+
+  if (!updatedDriver) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Driver not found');
+  }
+
+  const trip: any = await Trip.findOne({
+    driver: id,
+    acceptStatus: 'accepted',
+  });
+
+  //@ts-ignore
+  if (global.io) {
+    //@ts-ignore
+    const socketIo = global.io;
+    socketIo.to(trip?.user.toString()).emit('driver-location', updatedDriver);
+    // console.log('Driver location updated and emitted:', rs);
+  } else {
+    console.error('Socket.IO is not initialized');
+  }
 
   return updatedDriver;
 };
@@ -562,8 +583,8 @@ const getDriversSortedByDistance = async (req: Request): Promise<IDriver[]> => {
 };
 
 const getDriverLocation = async (data: any) => {
-  const { driverId } = data;
-
+  const { driverId, userId } = data;
+  console.log('*******formattedData********', driverId);
   const findDriver: any = await Driver.findById(driverId);
   if (!findDriver) {
     throw new Error('Driver not found');
@@ -576,8 +597,8 @@ const getDriverLocation = async (data: any) => {
   if (global.io) {
     //@ts-ignore
     const socketIo = global.io;
-    socketIo.to(driverId).emit('driver-location', formattedData);
-    // console.log('*******formattedData********', res);
+    const res = socketIo.to(userId).emit('driver-location', formattedData);
+    console.log('*******formattedData********', res);
   } else {
     console.error('Socket.IO is not initialized');
   }

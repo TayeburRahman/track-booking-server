@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Model, Types } from 'mongoose';
+import { IUser } from '../user/user.interface';
 
 export type Ilocation = {
   latitude: Number;
@@ -40,6 +41,7 @@ export type IDriver = {
   isActive: boolean;
   is_block: boolean;
   location: Ilocation;
+  current_trip_user: Types.ObjectId | IUser;
 };
 
 export type IActivationToken = {
