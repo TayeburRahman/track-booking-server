@@ -55,6 +55,7 @@ const forgotPass = async (payload: { email: string }) => {
   `,
   );
 };
+
 //! This is reset i means set new password controller
 const resetPassword = async (
   payload: { email: string; newPassword: string },

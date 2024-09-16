@@ -21,9 +21,9 @@ import { sendResetEmail } from '../auth/sendResetMails';
 import { logger } from '../../../shared/logger';
 import { IActivationRequest, IDriver, Ilocation } from './driver.interface';
 import Driver from './driver.model';
-import { IReqUser } from '../user/user.interface';
+import { IReqUser, IUser } from '../user/user.interface';
 import { CustomRequest } from '../../../interfaces/common';
-import { haversineDistance } from './driver.help';
+import { haversineDistance, validateEmail } from './driver.help';
 import Trip from '../trip/trip.model';
 
 //!
@@ -501,20 +501,25 @@ const truckLocationUpdate = async (req: Request): Promise<IDriver | null> => {
   );
 
   if (!updatedDriver) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Driver not found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Driver not found!');
   }
+
+  const { location } = updatedDriver;
 
   const trip: any = await Trip.findOne({
     driver: id,
     acceptStatus: 'accepted',
   });
 
+  if (!trip) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Driver current trip found!');
+  }
+
   //@ts-ignore
   if (global.io) {
     //@ts-ignore
     const socketIo = global.io;
-    socketIo.to(trip?.user.toString()).emit('driver-location', updatedDriver);
-    // console.log('Driver location updated and emitted:', rs);
+    socketIo.to(trip?.user.toString()).emit('driver-location', location);
   } else {
     console.error('Socket.IO is not initialized');
   }
@@ -584,26 +589,58 @@ const getDriversSortedByDistance = async (req: Request): Promise<IDriver[]> => {
 
 const getDriverLocation = async (data: any) => {
   const { driverId, userId } = data;
-  console.log('*******formattedData********', driverId);
+
   const findDriver: any = await Driver.findById(driverId);
   if (!findDriver) {
     throw new Error('Driver not found');
   }
+
   const formattedData = {
     location: findDriver.location,
     name: findDriver.name,
   };
+
   //@ts-ignore
   if (global.io) {
     //@ts-ignore
     const socketIo = global.io;
-    const res = socketIo.to(userId).emit('driver-location', formattedData);
-    console.log('*******formattedData********', res);
+    socketIo.to(userId).emit('driver-location', formattedData);
   } else {
     console.error('Socket.IO is not initialized');
   }
-
   return formattedData;
+};
+
+const updatePaypalEmail = async (req: Request) => {
+  const { userId } = req.user as IReqUser;
+  const { paypalEmail } = req.body;
+
+  const isValid = await new Promise(resolve => {
+    validateEmail(paypalEmail, resolve);
+  });
+
+  if (!isValid) {
+    throw new Error(
+      'The email address provided is not valid. Please enter a valid PayPal email address.',
+    );
+  }
+
+  const driverUpdate = await Driver.findByIdAndUpdate(
+    userId,
+    { paypalEmail },
+    { new: true },
+  );
+
+  // if (!findDriver.) {
+  //   throw new Error('Driver not found!');
+  // }
+
+  // const formattedData = {
+  //   location: findDriver.location,
+  //   name: findDriver.name,
+  // };
+
+  return driverUpdate;
 };
 
 export const DriverService = {
@@ -626,4 +663,5 @@ export const DriverService = {
   allTruckLocation,
   getDriversSortedByDistance,
   getDriverLocation,
+  updatePaypalEmail,
 };

@@ -42,6 +42,7 @@ export type IDriver = {
   is_block: boolean;
   location: Ilocation;
   current_trip_user: Types.ObjectId | IUser;
+  paypalEmail: string;
 };
 
 export type IActivationToken = {

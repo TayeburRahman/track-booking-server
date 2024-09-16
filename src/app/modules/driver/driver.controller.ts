@@ -227,7 +227,18 @@ const getDriversSortedByDistance = catchAsync(
   },
 );
 
+const updatePaypalEmail = catchAsync(async (req: Request, res: Response) => {
+  const result = await DriverService.updatePaypalEmail(req);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Driver location get successfully',
+    data: result,
+  });
+});
+
 export const DriverController = {
+  updatePaypalEmail,
   getAllDriver,
   getSingleDriver,
   deleteDriver,

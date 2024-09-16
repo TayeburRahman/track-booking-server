@@ -51,8 +51,8 @@ const driverSchema = new Schema<IDriver>(
     },
     profile_image: {
       type: String,
-      // default:
-      //   'https://res.cloudinary.com/arafatleo/image/upload/v1720600946/images_1_dz5srb.png',
+      default:
+        'https://res.cloudinary.com/arafatleo/image/upload/v1720600946/images_1_dz5srb.png',
     },
     licenseFrontImage: {
       type: String,
@@ -118,6 +118,9 @@ const driverSchema = new Schema<IDriver>(
       type: String,
     },
     activationCode: {
+      type: String,
+    },
+    paypalEmail: {
       type: String,
     },
     current_trip_user: {

@@ -166,15 +166,6 @@ const acceptTrip = async (req: Request) => {
     { new: true, runValidators: true },
   );
 
-  // console.log('--updatedTrip.driver--', updatedTrip.driver, userId);
-
-  // const updated = await Driver.findByIdAndUpdate(
-  //   updatedTrip.driver,
-  //   { current_trip_user: updatedTrip.user },
-  //   { new: true, runValidators: true },
-  // );
-  // console.log('--update--', updated);
-
   if (updatedTrip) {
     const userNotification = await Notification.create({
       title: 'Your Trip Accepted',
@@ -194,7 +185,6 @@ const acceptTrip = async (req: Request) => {
     if (global.io) {
       //@ts-ignore
       const socketIo = global.io;
-
       socketIo
         .to(updatedTrip.user.toString())
         .emit('notification', userNotification);
@@ -214,6 +204,7 @@ const endTrip = async (req: Request) => {
   const { userId } = req.user as IReqUser;
 
   const trip = await Trip.findById(id);
+
   if (!trip) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Trip not found');
   }

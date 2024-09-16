@@ -66,6 +66,12 @@ router.patch(
   DriverController.updateProfile,
 );
 
+router.patch(
+  '/paypal-email',
+  auth(ENUM_USER_ROLE.DRIVER),
+  DriverController.updatePaypalEmail,
+);
+
 router.get(
   '/truck/location',
   auth(

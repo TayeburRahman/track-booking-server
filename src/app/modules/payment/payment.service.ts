@@ -1,22 +1,13 @@
-import Stripe from 'stripe';
 import config from '../../../config';
 import ApiError from '../../../errors/ApiError';
 import httpStatus from 'http-status';
 import { Payment } from './payment.model';
-import { paypalTokenGenerator } from './paypal.token';
 import axios from 'axios';
-import { Request } from 'express';
 import QueryBuilder from '../../../builder/QueryBuilder';
-import {
-  IPayment,
-  MakePaymentIntentResponse,
-  Payload,
-} from './payment.interface';
+import { IPayment, Payload } from './payment.interface';
 import { IGenericResponse } from '../../../interfaces/paginations';
 import Trip from '../trip/trip.model';
 import Notification from '../notifications/notifications.model';
-const paypal = require('@paypal/checkout-server-sdk');
-const { client } = require('./paypal.client');
 
 async function generateAccessToken(): Promise<string> {
   try {
@@ -40,29 +31,6 @@ async function generateAccessToken(): Promise<string> {
     throw new Error('Failed to generate access token');
   }
 }
-
-const getPayPalAccessToken = async (): Promise<string> => {
-  const response = await axios.post(
-    `${config.paypal.PAYPAL_BASE_URL}/v1/oauth2/token`,
-    'grant_type=client_credentials',
-    {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      auth: {
-        username: process.env.PAYPAL_CLIENT_ID!,
-        password: process.env.PAYPAL_SECRET!,
-      },
-    },
-  );
-
-  // console.log(
-  //   'response.data.access_token=====================',
-  //   response.data.access_token,
-  // );
-
-  return response.data.access_token;
-};
 
 const makePaymentIntent = async (payload: Payload) => {
   // const accessToken = await generateAccessToken();
@@ -238,19 +206,21 @@ const capturePayment = async (orderId: string) => {
       },
     },
   );
-  return response.data;
+
+  if (response.status === 200 && response.data.status === 'APPROVED') {
+    console.log('Payment capture was successful!');
+    return response.data;
+  } else {
+    throw new ApiError(
+      404,
+      'Payment capture failed or order status is not approved.',
+    );
+  }
 };
 
 const transferPayment = async (data: any) => {
   const { amount, driverEmail } = data;
-  const accessToken = await getPayPalAccessToken();
-
-  console.log(
-    'Payout to driver==============================================================',
-    accessToken,
-    driverEmail,
-    amount,
-  );
+  const accessToken = await generateAccessToken();
 
   const response = await axios.post(
     `${config.paypal.PAYPAL_BASE_URL}/v1/payments/payouts`,
@@ -281,57 +251,6 @@ const transferPayment = async (data: any) => {
       },
     },
   );
-
-  return { batch_id: response.data.batch_header.payout_batch_id };
-};
-
-const createPayoutToDriver = async (payload: any) => {
-  const { amount, driverEmail } = payload;
-  const accessToken = await getPayPalAccessToken();
-
-  console.log(
-    'Payout to driver==============================================================',
-    accessToken,
-    driverEmail,
-    amount,
-  );
-
-  const response = await axios.post(
-    `${config.paypal.PAYPAL_BASE_URL}/v1/payments/payouts`,
-    {
-      sender_batch_header: {
-        sender_batch_id: `batch-${Date.now()}`,
-        email_subject: 'You have a payment',
-        email_message:
-          'You have received a payment. Thanks for using our service!',
-      },
-      items: [
-        {
-          recipient_type: 'EMAIL',
-          amount: {
-            value: amount.toFixed(2),
-            currency: 'USD',
-          },
-          receiver: driverEmail,
-          note: 'Payment for your trip',
-          sender_item_id: `item-${Date.now()}`,
-        },
-      ],
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  );
-
-  console.log('response', response.data);
-
-  // console.log(
-  //   'response==============================================================',
-  //   response,
-  // );
 
   return { batch_id: response.data.batch_header.payout_batch_id };
 };
@@ -358,8 +277,6 @@ const getAllPayment = async (
   const result = await userQuery.modelQuery;
   const meta = await userQuery.countTotal();
 
-  console.log('result', result);
-
   return {
     meta,
     data: result,
@@ -371,7 +288,6 @@ export const PaymentService = {
   saveTripPayment,
   getUserPayment,
   getAllPayment,
-  createPayoutToDriver,
   capturePayment,
   transferPayment,
 };
