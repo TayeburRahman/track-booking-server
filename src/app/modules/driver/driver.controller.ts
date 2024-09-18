@@ -232,7 +232,7 @@ const updatePaypalEmail = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Driver location get successfully',
+    message: 'Driver paypal email update successfully',
     data: result,
   });
 });

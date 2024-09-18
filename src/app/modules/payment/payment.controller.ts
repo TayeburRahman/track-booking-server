@@ -37,14 +37,13 @@ const getUserPayment = catchAsync(async (req: Request, res: Response) => {
 });
 
 const createPayoutToDriver = catchAsync(async (req: Request, res: Response) => {
-  const result = await PaymentService.createPayoutToDriver(req.body);
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: 'Payment data save successfully',
-    data: result,
-  });
+  // const result = await PaymentService.createPayoutToDriver(req.body);
+  // sendResponse(res, {
+  //   statusCode: 200,
+  //   success: true,
+  //   message: 'Payment data save successfully',
+  //   data: result,
+  // });
 });
 
 const capturePayment = catchAsync(async (req: Request, res: Response) => {
@@ -74,7 +73,7 @@ const getAllPayment = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Payment data save successfully',
+    message: 'Payment successfully completed.',
     data: result,
   });
 });

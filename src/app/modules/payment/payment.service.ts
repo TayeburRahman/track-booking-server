@@ -118,19 +118,19 @@ const saveTripPayment = async (payload: any) => {
 
   if (updatedTrip) {
     const userNotification = await Notification.create({
-      title: 'Payment Successfully for trip',
+      title: 'Payment Successful for Your Trip.',
       driver: updatedTrip.driver,
       user: updatedTrip.user,
       message:
-        'Your payment has been successfully completed. Thank you for using our service.',
+        'Your payment was successfully completed. Thank you for using our service!',
     });
 
     const driverNotification = await Notification.create({
-      title: 'Payment Successfully for trip',
+      title: 'Payment Successful for a Trip.',
       driver: updatedTrip.driver,
       user: updatedTrip.user,
       message:
-        'Your payment has been successfully completed. Thank you for your excellent service!',
+        'The payment has been successfully completed. Thank you for your excellent service!',
     });
 
     //@ts-ignore
@@ -197,6 +197,7 @@ const saveTripPayment = async (payload: any) => {
 
 const capturePayment = async (orderId: string) => {
   // const orderId = '8953883464625670D';
+  console.log('orderId==', orderId);
   const accessToken = await generateAccessToken();
   const response = await axios.get(
     `https://api-m.sandbox.paypal.com/v2/checkout/orders/${orderId}`,
@@ -207,8 +208,7 @@ const capturePayment = async (orderId: string) => {
     },
   );
 
-  if (response.status === 200 && response.data.status === 'APPROVED') {
-    console.log('Payment capture was successful!');
+  if (response.status === 200 && response.data.status === 'COMPLETED') {
     return response.data;
   } else {
     throw new ApiError(
@@ -220,39 +220,55 @@ const capturePayment = async (orderId: string) => {
 
 const transferPayment = async (data: any) => {
   const { amount, driverEmail } = data;
-  const accessToken = await generateAccessToken();
 
-  const response = await axios.post(
-    `${config.paypal.PAYPAL_BASE_URL}/v1/payments/payouts`,
-    {
-      sender_batch_header: {
-        sender_batch_id: `batch-${Date.now()}`,
-        email_subject: 'You have a payment',
-        email_message:
-          'You have received a payment. Thanks for using our service!',
-      },
-      items: [
-        {
-          recipient_type: 'EMAIL',
-          amount: {
-            value: amount.toFixed(2),
-            currency: 'USD',
-          },
-          receiver: driverEmail,
-          note: 'Payment for your trip',
-          sender_item_id: `item-${Date.now()}`,
+  try {
+    const accessToken = await generateAccessToken();
+    const response = await axios.post(
+      `${process.env.PAYPAL_BASE_URL}/v1/payments/payouts`,
+      {
+        sender_batch_header: {
+          sender_batch_id: `batch-${Date.now()}`,
+          email_subject: 'You have a payment',
+          email_message:
+            'You have received a payment. Thanks for using our service!',
         },
-      ],
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
+        items: [
+          {
+            recipient_type: 'EMAIL',
+            amount: {
+              value: amount.toFixed(2),
+              currency: 'USD',
+            },
+            receiver: driverEmail,
+            note: 'Payment for your trip',
+            sender_item_id: `item-${Date.now()}`,
+          },
+        ],
       },
-    },
-  );
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
 
-  return { batch_id: response.data.batch_header.payout_batch_id };
+    if (response.status !== 201) {
+      throw new ApiError(
+        response.status,
+        'Trip complete to transfer payment failed. Please check the PayPal details and try again.',
+      );
+    }
+
+    console.log('====', response.data);
+
+    return { batch_id: response.data.batch_header.payout_batch_id };
+  } catch (error) {
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Error transferring payment.Please check your PayPal and try again later.',
+    );
+  }
 };
 
 const getUserPayment = async (payload: any) => {
@@ -266,8 +282,6 @@ const getUserPayment = async (payload: any) => {
 const getAllPayment = async (
   query: Record<string, unknown>,
 ): Promise<IGenericResponse<IPayment[]>> => {
-  console.log('query', query);
-  console.log('hello ', query);
   const userQuery = new QueryBuilder(Payment.find(), query)
     .search(['name'])
     .filter()

@@ -16,4 +16,6 @@ export type ITrip = {
   acceptStatus: 'pending' | 'accepted' | 'end' | 'cancel';
   order_id: string;
   payment: 'pending' | 'complete';
+  transfer_batch_id: String;
+  transfer_amount: Number;
 };

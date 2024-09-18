@@ -8,17 +8,19 @@ import { Types } from 'mongoose';
 
 const insertIntoDB = async (req: Request) => {
   const { userId } = req.user as IReqUser;
-  const { driver, ratting } = req.body;
+  const { driver, ratting, comment, tripId } = req.body;
   const isExistUser = await User.findById(userId);
 
   if (!isExistUser) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  
+
   return await Ratting.create({
     user: userId,
     driver,
     ratting,
+    comment,
+    tripId,
   });
 };
 
@@ -35,9 +37,12 @@ const averageRattingForDriver = async (req: Request) => {
     },
   ]);
 
+  const allRating = await Ratting.find({ driver: driverObjectId });
+
   if (result.length > 0) {
     const averageRating = result[0].averageRating.toFixed(2);
-    return Number(averageRating);
+
+    return { allRating, averageRating };
   } else {
     return {
       message: 'No ratings found for this driver.',

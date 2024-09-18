@@ -9,6 +9,8 @@ import Trip from './trip.model';
 import Driver from '../driver/driver.model';
 import Notification from '../notifications/notifications.model';
 import { Ratting } from '../rattings/rattings.model';
+import { PaymentService } from '../payment/payment.service';
+import { IDriver } from '../driver/driver.interface';
 // const http = require('http');
 // const express = require('express');
 // const socketIo = require('socket.io');
@@ -151,6 +153,12 @@ const acceptTrip = async (req: Request) => {
   const { id } = req.params;
   const { userId } = req.user as IReqUser;
 
+  const driver: any = await Driver.findById(userId);
+
+  if (!driver.paypalEmail) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'PayPal email does not exist.');
+  }
+
   const trip = await Trip.findById(id);
   if (!trip) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Trip not found');
@@ -203,14 +211,40 @@ const endTrip = async (req: Request) => {
   const { id } = req.params;
   const { userId } = req.user as IReqUser;
 
-  const trip = await Trip.findById(id);
+  const [trip, driver]: any = await Promise.all([
+    Trip.findById(id),
+    Driver.findById(userId),
+  ]);
 
   if (!trip) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Trip not found');
   }
+  if (!driver?.paypalEmail) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Driver paypal email not found!');
+  }
+  if (!trip?.order_id) {
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      'User has not paid yet. Please retry later to complete the trip.',
+    );
+  }
 
   if (trip.acceptStatus === 'end') {
     throw new ApiError(httpStatus.CONFLICT, 'Trip already ended');
+  }
+
+  await PaymentService.capturePayment(trip.order_id);
+
+  const transfer = await PaymentService.transferPayment({
+    amount: Math.floor(trip.amount),
+    driverEmail: driver.paypalEmail,
+  });
+
+  if (!transfer.batch_id) {
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      'Transfer failed. Please check your PayPal email.',
+    );
   }
 
   const updatedTrip = await Trip.findByIdAndUpdate(
@@ -220,33 +254,35 @@ const endTrip = async (req: Request) => {
   );
 
   if (updatedTrip) {
-    const userNotification = await Notification.create({
-      title: 'Trip Successfully Completed',
-      driver: updatedTrip.driver,
-      user: updatedTrip.user,
-      message:
-        'Your trip has been successfully completed. Thank you for using our service.',
-    });
+    const notifications = [
+      {
+        title: 'Trip Successfully Completed',
+        driver: updatedTrip.driver,
+        user: updatedTrip.user,
+        message:
+          'Your trip has been successfully completed. Thank you for using our service.',
+      },
+      {
+        title: 'Trip Successfully Completed',
+        driver: updatedTrip.driver,
+        user: userId,
+        message:
+          'Your trip has been successfully completed. Thank you for your excellent service!',
+      },
+    ];
 
-    const driverNotification = await Notification.create({
-      title: 'Trip Successfully Completed',
-      driver: updatedTrip.driver,
-      user: userId,
-      message:
-        'Your trip has been successfully completed. Thank you for your excellent service!',
-    });
+    await Notification.insertMany(notifications);
 
     //@ts-ignore
     if (global.io) {
       //@ts-ignore
-      const socketIo = global.io;
-
-      socketIo
+      global.io
         .to(updatedTrip.user.toString())
-        .emit('notification', userNotification);
-      socketIo
+        .emit('notification', notifications[0]);
+      //@ts-ignore
+      global.io
         .to(updatedTrip.driver.toString())
-        .emit('notification', driverNotification);
+        .emit('notification', notifications[1]);
     } else {
       console.error('Socket.IO is not initialized');
     }

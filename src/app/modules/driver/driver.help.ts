@@ -20,41 +20,33 @@ const haversineDistance = (
   return R * c;
 };
 
-// Function to validate email
-// Function to validate email format
+// -----------------------------
 const isValidEmailFormat = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };
 
-// Function to check if the domain has MX records
-const checkDomainHasMxRecords = (
-  domain: string,
-  callback: (hasMxRecords: boolean) => void,
-): void => {
-  dns.resolveMx(domain, (err: any, addresses: any) => {
-    if (err) {
-      callback(false);
-    } else {
-      callback(addresses.length > 0);
-    }
+const checkDomainHasMxRecords = async (domain: string): Promise<boolean> => {
+  return new Promise(resolve => {
+    dns.resolveMx(domain, (err: any, addresses: any) => {
+      if (err) {
+        resolve(false);
+      } else {
+        resolve(addresses.length > 0);
+      }
+    });
   });
 };
 
 // Function to validate email
-const validateEmail = (
-  email: string,
-  callback: (isValid: boolean) => void,
-): void => {
+const validateEmail = async (email: string): Promise<boolean> => {
   if (!isValidEmailFormat(email)) {
-    callback(false);
-    return;
+    return false;
   }
-
   const domain = email.split('@')[1];
-  checkDomainHasMxRecords(domain, (hasMxRecords: boolean) => {
-    callback(hasMxRecords);
-  });
+  const hasMxRecords = await checkDomainHasMxRecords(domain);
+
+  return hasMxRecords;
 };
 
 export { haversineDistance, validateEmail };

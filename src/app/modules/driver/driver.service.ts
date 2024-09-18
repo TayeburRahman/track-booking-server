@@ -85,50 +85,52 @@ const registerDriver = async (req: CustomRequest) => {
 
 //!
 const updateProfile = async (req: CustomRequest): Promise<IDriver | null> => {
-  const { files } = req;
+  const { files } = req as any; // Cast req to include files property
   const { userId } = req.user as IReqUser;
-  //@ts-ignore
-  const data = req.body;
 
+  // Validate user existence
   const checkValidDriver = await Driver.findById(userId);
   if (!checkValidDriver) {
     throw new ApiError(404, 'You are not authorized');
   }
 
+  // Prepare data for updating
+  const data = req.body;
+
+  // Handle file uploads if they exist
+  const fileUploads: Partial<IDriver> = {};
   if (files) {
-    if (files.licenseFrontImage) {
-      //@ts-ignore
-      data.licenseFrontImage = `/images/licenses/${files.licenseFrontImage[0].filename}`;
+    if (files.licenseFrontImage && files.licenseFrontImage[0]) {
+      fileUploads.licenseFrontImage = `/images/licenses/${files.licenseFrontImage[0].filename}`;
     }
-    if (files.licenseBackImage) {
-      //@ts-ignore
-      data.licenseBackImage = `/images/licenses/${files.licenseBackImage[0].filename}`;
+    if (files.licenseBackImage && files.licenseBackImage[0]) {
+      fileUploads.licenseBackImage = `/images/licenses/${files.licenseBackImage[0].filename}`;
     }
-    if (files.truckDocumentImage) {
-      //@ts-ignore
-      data.truckDocumentImage = `/images/trucks/${files.truckDocumentImage[0].filename}`;
+    if (files.truckDocumentImage && files.truckDocumentImage[0]) {
+      fileUploads.truckDocumentImage = `/images/trucks/${files.truckDocumentImage[0].filename}`;
     }
-    if (files.truckImage) {
-      //@ts-ignore
-      data.truckImage = `/images/trucks/${files.truckImage[0].filename}`;
+    if (files.truckImage && files.truckImage[0]) {
+      fileUploads.truckImage = `/images/trucks/${files.truckImage[0].filename}`;
     }
-    if (files.profile_image) {
-      //@ts-ignore
-      data.profile_image = `/images/profile/${files.profile_image[0].filename}`;
+    if (files.profile_image && files.profile_image[0]) {
+      fileUploads.profile_image = `/images/profile/${files.profile_image[0].filename}`;
     }
   }
 
-  const { ...DriverData } = data;
+  // Merge data and file uploads
+  const updatedUserData = { ...data, ...fileUploads };
+  console.log('DriverData', updatedUserData);
 
-  const updatedUserData = { ...DriverData };
-
+  // Update driver profile
   const result = await Driver.findOneAndUpdate(
     { _id: userId },
-    { ...updatedUserData },
+    updatedUserData,
     {
       new: true,
+      runValidators: true,
     },
   );
+
   return result;
 };
 
@@ -283,6 +285,7 @@ const deleteMyAccount = async (payload: {
   const { email, password } = payload;
 
   const isDriverExist = await Driver.isDriverExist(email);
+
   //@ts-ignore
   if (!isDriverExist) {
     throw new ApiError(404, 'Driver does not exist');
@@ -511,17 +514,15 @@ const truckLocationUpdate = async (req: Request): Promise<IDriver | null> => {
     acceptStatus: 'accepted',
   });
 
-  if (!trip) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Driver current trip found!');
-  }
-
-  //@ts-ignore
-  if (global.io) {
+  if (trip) {
     //@ts-ignore
-    const socketIo = global.io;
-    socketIo.to(trip?.user.toString()).emit('driver-location', location);
-  } else {
-    console.error('Socket.IO is not initialized');
+    if (global.io) {
+      //@ts-ignore
+      const socketIo = global.io;
+      socketIo.to(trip?.user.toString()).emit('driver-location', location);
+    } else {
+      console.error('Socket.IO is not initialized');
+    }
   }
 
   return updatedDriver;
@@ -615,12 +616,11 @@ const updatePaypalEmail = async (req: Request) => {
   const { userId } = req.user as IReqUser;
   const { paypalEmail } = req.body;
 
-  const isValid = await new Promise(resolve => {
-    validateEmail(paypalEmail, resolve);
-  });
+  const isValid = await validateEmail(paypalEmail);
 
   if (!isValid) {
-    throw new Error(
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
       'The email address provided is not valid. Please enter a valid PayPal email address.',
     );
   }
@@ -631,14 +631,9 @@ const updatePaypalEmail = async (req: Request) => {
     { new: true },
   );
 
-  // if (!findDriver.) {
-  //   throw new Error('Driver not found!');
-  // }
-
-  // const formattedData = {
-  //   location: findDriver.location,
-  //   name: findDriver.name,
-  // };
+  if (!driverUpdate) {
+    throw new Error('Email update Failed!');
+  }
 
   return driverUpdate;
 };

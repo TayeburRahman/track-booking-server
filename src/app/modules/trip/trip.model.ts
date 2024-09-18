@@ -48,6 +48,9 @@ const TripSchema = new mongoose.Schema<ITrip>(
     order_id: {
       type: String,
     },
+    transfer_amount: {
+      type: Number,
+    },
     payment: {
       type: String,
       enum: ['pending', 'complete'],
