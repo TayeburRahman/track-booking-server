@@ -660,6 +660,8 @@ const updatePaypalEmail = async (req: Request) => {
 
   const isValid = await validateEmail(paypalEmail);
 
+  console.log(isValid);
+
   if (!isValid) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,

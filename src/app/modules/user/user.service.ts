@@ -468,7 +468,7 @@ const resetPassword = async (req: Request) => {
   if (global.io) {
     //@ts-ignore
     const socketIo = global.io;
-    socketIo.to(userId).emit('notification', userNotification);
+    socketIo.to(user?._id).emit('notification', userNotification);
   } else {
     console.error('Socket.IO is not initialized');
   }
