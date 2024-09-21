@@ -35,7 +35,7 @@ router.patch(
 router.post('/forgot-password', UserController.forgotPass);
 router.post(
   '/reset-password',
-  auth(ENUM_USER_ROLE.USER, ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
+  // auth(ENUM_USER_ROLE.USER, ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
   UserController.resetPassword,
 );
 router.post('/resend', UserController.resendActivationCode);

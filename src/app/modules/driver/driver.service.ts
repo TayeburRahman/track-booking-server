@@ -238,7 +238,7 @@ const loginDriver = async (payload: ILoginUser) => {
   const { email, password } = payload;
 
   const isDriverExist = (await Driver.isDriverExist(email)) as IDriver;
-  const checkDriver = await Driver.findOne({ email });
+  const checkDriver = await Driver.findOne({ email })as IDriver;
   if (!isDriverExist) {
     throw new ApiError(404, 'Driver does not exist');
   }
@@ -249,7 +249,7 @@ const loginDriver = async (payload: ILoginUser) => {
   ) {
     throw new ApiError(402, 'Wrong credentials');
   }
-  if (isDriverExist.isActive === false) {
+  if (checkDriver.isActive === false) {
     throw new ApiError(
       httpStatus.UNAUTHORIZED,
       'Please active your account then try to login',
