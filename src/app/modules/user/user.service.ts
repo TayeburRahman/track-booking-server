@@ -223,7 +223,7 @@ const loginUser = async (payload: ILoginUser) => {
   const { email, password } = payload;
 
   const isUserExist = (await User.isUserExist(email)) as IUser;
-  const checkUser = await User.findOne({ email }) as IUser;
+  const checkUser = (await User.findOne({ email })) as IUser;
   if (!isUserExist) {
     throw new ApiError(404, 'User does not exist')
   }
