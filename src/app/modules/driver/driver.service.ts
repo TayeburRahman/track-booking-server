@@ -238,7 +238,7 @@ const loginDriver = async (payload: ILoginUser) => {
   const { email, password } = payload;
 
   const isDriverExist = (await Driver.isDriverExist(email)) as IDriver;
-  const checkDriver = await Driver.findOne({ email });
+  const checkDriver = (await Driver.findOne({ email })) as IDriver;
   if (!isDriverExist) {
     throw new ApiError(404, 'Driver does not exist');
   }
@@ -249,7 +249,7 @@ const loginDriver = async (payload: ILoginUser) => {
   ) {
     throw new ApiError(402, 'Wrong credentials');
   }
-  if (isDriverExist.isActive === false) {
+  if (checkDriver.isActive === false) {
     throw new ApiError(
       httpStatus.UNAUTHORIZED,
       'Please active your account then try to login',
@@ -528,6 +528,48 @@ const truckLocationUpdate = async (req: Request): Promise<IDriver | null> => {
   return updatedDriver;
 };
 
+const locationUpdateSocket = async (data: any) => {
+  const { latitude, longitude, address, driver_id }: any = data;
+
+  // Validate parameters
+  if (!driver_id || latitude === undefined || longitude === undefined) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid request parameters');
+  }
+
+  // Update driver location
+  const updatedDriver = await Driver.findByIdAndUpdate(
+    driver_id,
+    {
+      $set: { location: { latitude, longitude, address } },
+    },
+    { new: true },
+  );
+
+  if (!updatedDriver) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Driver not found!');
+  }
+
+  const { location } = updatedDriver;
+
+  const trip: any = await Trip.findOne({
+    driver: driver_id,
+    acceptStatus: 'accepted',
+  });
+
+  if (trip) {
+    //@ts-ignore
+    if (global.io) {
+      //@ts-ignore
+      const socketIo = global.io;
+      socketIo.to(trip?.user.toString()).emit('driver-location', location);
+    } else {
+      console.error('Socket.IO is not initialized');
+    }
+  }
+
+  return updatedDriver;
+};
+
 const truckLocation = async (id: string): Promise<IDriver | null> => {
   const result = await Driver.findById(id);
 
@@ -659,4 +701,5 @@ export const DriverService = {
   getDriversSortedByDistance,
   getDriverLocation,
   updatePaypalEmail,
+  locationUpdateSocket,
 };

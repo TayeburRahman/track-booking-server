@@ -26,27 +26,9 @@ const isValidEmailFormat = (email: string): boolean => {
   return emailRegex.test(email);
 };
 
-const checkDomainHasMxRecords = async (domain: string): Promise<boolean> => {
-  return new Promise(resolve => {
-    dns.resolveMx(domain, (err: any, addresses: any) => {
-      if (err) {
-        resolve(false);
-      } else {
-        resolve(addresses.length > 0);
-      }
-    });
-  });
-};
-
 // Function to validate email
-const validateEmail = async (email: string): Promise<boolean> => {
-  if (!isValidEmailFormat(email)) {
-    return false;
-  }
-  const domain = email.split('@')[1];
-  const hasMxRecords = await checkDomainHasMxRecords(domain);
-
-  return hasMxRecords;
+const validateEmail = (email: string): boolean => {
+  return isValidEmailFormat(email);
 };
 
 export { haversineDistance, validateEmail };

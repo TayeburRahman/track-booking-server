@@ -158,6 +158,29 @@ io.on('connection', async (socket: Socket) => {
       },
     );
 
+    // Handle GET MASSAGE event: 'get-message'
+    socket.on(
+      'update-location',
+      async (data: {
+        driver_id: string;
+        longitude: string;
+        latitude: string;
+        address: string;
+      }) => {
+        try {
+          if (!data.driver_id || !data.longitude || !data.latitude) {
+            socket.emit('error', {
+              message: 'driver_id and longitude or latitude not found',
+            });
+          } else {
+            await DriverService.locationUpdateSocket(data);
+          }
+        } catch (err) {
+          console.error('Error sending new message:', err);
+        }
+      },
+    );
+
     // Handle GET CONVERSATION LIST event: 'get-conversation'
     socket.on('get-conversation', async (data: { loginId: string }) => {
       try {

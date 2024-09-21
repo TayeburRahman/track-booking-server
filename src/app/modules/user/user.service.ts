@@ -223,7 +223,7 @@ const loginUser = async (payload: ILoginUser) => {
   const { email, password } = payload;
 
   const isUserExist = (await User.isUserExist(email)) as IUser;
-  const checkUser = await User.findOne({ email });
+  const checkUser = (await User.findOne({ email })) as IUser;
   if (!isUserExist) {
     throw new ApiError(404, 'User does not exist');
   }
@@ -234,7 +234,7 @@ const loginUser = async (payload: ILoginUser) => {
   ) {
     throw new ApiError(402, 'Password is incorrect');
   }
-  if (isUserExist.isActive === false) {
+  if (checkUser.isActive === false) {
     throw new ApiError(
       httpStatus.UNAUTHORIZED,
       'Please active your account then try to login',
@@ -436,12 +436,11 @@ const checkIsValidForgetActivationCode = async (payload: {
 };
 //!
 const resetPassword = async (req: Request) => {
-  const { userId } = req.user as IReqUser;
-  const { newPassword, confirmPassword } = req.body;
+  const { newPassword, confirmPassword, email } = req.body;
   if (newPassword !== confirmPassword) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Password didn't match");
   }
-  const user = await User.findOne({ _id: userId }, { _id: 1 });
+  const user = await User.findOne({ email: email });
 
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User not found!');
@@ -454,14 +453,14 @@ const resetPassword = async (req: Request) => {
     Number(config.bcrypt_salt_rounds),
   );
 
-  await User.updateOne({ _id: userId }, { password }, { new: true });
+  await User.updateOne({ email: email }, { password }, { new: true });
   user.verifyCode = null;
   user.verifyExpire = null;
   await user.save();
 
   const userNotification = await Notification.create({
     title: 'Password reset Successfully.',
-    user: userId,
+    user: user?._id,
     message: 'Your account password has been changes successfully!',
   });
 
