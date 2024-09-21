@@ -381,7 +381,7 @@ const forgotPass = async (payload: { email: string }) => {
 };
 
 //!
-const resendActivationCode = async (payload: { email: string }) => {
+const resendVerifyCode = async (payload: { email: string }) => {
   const email = payload.email;
   const user = await Driver.findOne({ email });
 
@@ -405,6 +405,46 @@ const resendActivationCode = async (payload: { email: string }) => {
   const activationCode = forgetActivationCode();
   const expiryTime = new Date(Date.now() + 15 * 60 * 1000);
   user.verifyCode = activationCode;
+  user.verifyExpire = expiryTime;
+  await user.save();
+  sendResetEmail(
+    profile.email,
+    `
+      <div>
+        <p>Hi, ${profile.name}</p>
+        
+        <p>Your password reset Code: ${activationCode}</p>
+        <p>Thank you</p>
+      </div>
+  `,
+  );
+};
+
+//!
+const resendActivationCode = async (payload: { email: string }) => {
+  const email = payload.email;
+  const user = await Driver.findOne({ email });
+
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Driver does not exist!');
+  }
+
+  let profile = null;
+  if (user.role === ENUM_USER_ROLE.DRIVER) {
+    profile = await Driver.findOne({ _id: user._id });
+  }
+
+  if (!profile) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Profile not found!');
+  }
+
+  if (!profile.email) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email not found!');
+  }
+
+  const activationCode = forgetActivationCode();
+  const expiryTime = new Date(Date.now() + 15 * 60 * 1000);
+  user.activationCode = activationCode;
   user.verifyExpire = expiryTime;
   await user.save();
   sendResetEmail(
@@ -703,7 +743,7 @@ export const DriverService = {
   activateDriver,
   deleteMyAccount,
   checkIsValidForgetActivationCode,
-  resendActivationCode,
+  resendVerifyCode,
   blockDriver,
   truckLocation,
   truckLocationUpdate,
@@ -712,4 +752,5 @@ export const DriverService = {
   getDriverLocation,
   updatePaypalEmail,
   locationUpdateSocket,
+  resendActivationCode,
 };

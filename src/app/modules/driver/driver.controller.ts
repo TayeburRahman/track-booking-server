@@ -139,6 +139,21 @@ const checkIsValidForgetActivationCode = catchAsync(
   },
 );
 
+const resendVerifyCode: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const data = req.body;
+
+    const result = await DriverService.resendVerifyCode(data);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Resend successfully',
+      data: result,
+    });
+  },
+);
+
 const resendActivationCode: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const data = req.body;
@@ -251,10 +266,11 @@ export const DriverController = {
   activateDriver,
   deleteMyAccount,
   checkIsValidForgetActivationCode,
-  resendActivationCode,
+  resendVerifyCode,
   blockDriver,
   truckLocation,
   truckLocationUpdate,
   allTruckLocation,
   getDriversSortedByDistance,
+  resendActivationCode,
 };
