@@ -47,7 +47,7 @@ const registrationUser = async (payload: IRegistration) => {
     expirationTime: Date.now() + 2 * 60 * 1000,
   } as unknown as IUser;
 
-  const isEmailExist = await User.findOne({ email });
+  const isEmailExist = await User.findOne({ email, isActive: true });
   if (isEmailExist) {
     throw new ApiError(400, 'Email already exist');
   }
@@ -125,20 +125,29 @@ const activateUser = async (payload: IActivationRequest) => {
   };
 };
 
-cron.schedule('* * * * *', async () => {
+cron.schedule('*/3 * * * *', async () => {
   try {
     const now = new Date();
-    const result = await User.deleteMany({
-      isActive: false,
-      expirationTime: { $lte: now },
-    });
-    if (result.deletedCount > 0) {
-      logger.info(`Deleted ${result.deletedCount} expired inactive users`);
+    const result = await User.updateMany(
+      {
+        isActive: false,
+        expirationTime: { $lte: now },
+      },
+      {
+        $unset: { activationCode: '' },
+      },
+    );
+
+    if (result.modifiedCount > 0) {
+      logger.info(
+        `Removed activation codes from ${result.modifiedCount} expired inactive users`,
+      );
     }
   } catch (error) {
-    logger.error('Error deleting expired users:', error);
+    logger.error('Error removing activation codes from expired users:', error);
   }
 });
+
 //!
 const getAllUsers = async (
   query: Record<string, unknown>,
