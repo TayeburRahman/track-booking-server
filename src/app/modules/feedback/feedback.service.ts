@@ -67,27 +67,26 @@ const addReplyToFeedback = async (req: Request) => {
   });
   return feedback;
 };
- 
+
 const deleteFeedback = async (req: Request) => {
-  const { id } = req.params;  
+  const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new Error('Invalid ID format');
   }
 
-  const result = await FeedBack.findOneAndDelete({_id: id}) 
+  const result = await FeedBack.findOneAndDelete({ _id: id });
 
   if (!result) {
     return { message: 'Feedback not found', success: false };
-  } 
+  }
 
   return { message: 'Feedback deleted successfully', success: true };
-
 };
 
 export const FeedBackService = {
   sendFeedBack,
   getFeedback,
   addReplyToFeedback,
-  deleteFeedback
+  deleteFeedback,
 };

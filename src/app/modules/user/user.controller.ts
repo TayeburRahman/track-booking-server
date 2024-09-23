@@ -168,7 +168,7 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const deleteMyAccount = catchAsync(async (req: Request, res: Response) => {
-  await UserService.deleteMyAccount(req.body);
+  await UserService.deleteMyAccount(req);
   sendResponse(res, {
     statusCode: 200,
     success: true,

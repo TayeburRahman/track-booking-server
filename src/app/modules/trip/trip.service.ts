@@ -378,7 +378,8 @@ const searchTrip = async () => {
       truckSize: driver.truckSize,
       cargoCapacity: driver.cargoCapacity,
       kmForPrice: driver.kmForPrice,
-      price: driver.price,
+      //@ts-ignore
+      price: driver?.price,
       ratting: driverRating,
     };
   });
