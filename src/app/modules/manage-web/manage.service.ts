@@ -54,7 +54,10 @@ const deleteTermsConditions = async (id: string) => {
 const addCustomerCare = async (payload: { contactNumber: string }) => {
   const isExist = await Customer.findOne();
   if (isExist) {
-    throw new ApiError(400, 'Already have an contact number');
+    await Customer.findOneAndUpdate({}, payload, {
+      new: true,
+      runValidators: true,
+    });
   } else {
     return await Customer.create(payload);
   }

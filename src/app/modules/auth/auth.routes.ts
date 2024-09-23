@@ -27,7 +27,6 @@ router.delete(
   auth(ENUM_USER_ROLE.USER),
   UserController.deleteMyAccount,
 );
-
 router.patch(
   '/change-password',
   auth(ENUM_USER_ROLE.USER),
@@ -65,7 +64,6 @@ router.delete(
   uploadFile(),
   UserController.deleteUser,
 );
-
 //! Admin Authentication Start
 router.post(
   '/admin/register',
@@ -91,7 +89,6 @@ router.patch(
   auth(ENUM_USER_ROLE.ADMIN),
   AdminController.changePassword,
 );
-
 router.post(
   '/admin/add-admin',
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
