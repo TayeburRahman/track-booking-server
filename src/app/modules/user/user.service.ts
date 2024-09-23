@@ -57,6 +57,13 @@ const registrationUser = async (payload: IRegistration) => {
       "Password and Confirm Password Didn't Match",
     );
   }
+
+  const isEmailExistInactive = await User.findOne({ email, isActive: false });
+
+  if (isEmailExistInactive) {
+    await User.deleteOne({ email });
+  }
+
   const activationToken = createActivationToken();
   const activationCode = activationToken.activationCode;
   const data = { user: { name: user.name }, activationCode };

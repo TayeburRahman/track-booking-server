@@ -52,9 +52,13 @@ const deleteTermsConditions = async (id: string) => {
   return await TermsConditions.findByIdAndDelete(id);
 };
 const addCustomerCare = async (payload: { contactNumber: string }) => {
+  // console.log('payload',payload);
   const isExist = await Customer.findOne();
   if (isExist) {
-    throw new ApiError(400, 'Already have an contact number');
+    return await Customer.findOneAndUpdate({}, payload, {
+      new: true,
+      runValidators: true,
+    });
   } else {
     return await Customer.create(payload);
   }

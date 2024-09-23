@@ -154,6 +154,21 @@ const resendVerifyCode: RequestHandler = catchAsync(
   },
 );
 
+const resendActiveCode: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const data = req.body;
+
+    const result = await DriverService.resendActiveCode(data);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Resend successfully',
+      data: result,
+    });
+  },
+);
+
 const resendActivationCode: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const data = req.body;
@@ -273,4 +288,5 @@ export const DriverController = {
   allTruckLocation,
   getDriversSortedByDistance,
   resendActivationCode,
+  resendActiveCode,
 };

@@ -222,6 +222,9 @@ const transferPayment = async (data: any) => {
   const { amount, driverEmail } = data;
 
   try {
+    const percentage = 0.8;
+    const percentage80 = Number(amount) * percentage;
+
     const accessToken = await generateAccessToken();
     const response = await axios.post(
       `${process.env.PAYPAL_BASE_URL}/v1/payments/payouts`,
@@ -236,7 +239,7 @@ const transferPayment = async (data: any) => {
           {
             recipient_type: 'EMAIL',
             amount: {
-              value: amount.toFixed(2),
+              value: percentage80.toFixed(2),
               currency: 'USD',
             },
             receiver: driverEmail,
