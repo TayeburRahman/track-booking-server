@@ -195,7 +195,7 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteMyAccount = catchAsync(async (req: Request, res: Response) => {
-  await DriverService.deleteMyAccount(req.body);
+  await DriverService.deleteMyAccount(req);
   sendResponse(res, {
     statusCode: 200,
     success: true,
