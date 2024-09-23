@@ -43,7 +43,8 @@ router.patch(
 );
 router.post('/forgot-password', DriverController.forgotPass);
 router.post('/reset-password', DriverController.resetPassword);
-router.post('/resend', DriverController.resendActivationCode);
+router.post('/resend', DriverController.resendVerifyCode);
+router.post('/active-resend', DriverController.resendActivationCode);
 router.post('/verify-otp', DriverController.checkIsValidForgetActivationCode);
 
 router.get(

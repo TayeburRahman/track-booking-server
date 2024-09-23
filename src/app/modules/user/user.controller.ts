@@ -128,6 +128,21 @@ const checkIsValidForgetActivationCode = catchAsync(
   },
 );
 
+const resendVerifyCode: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const data = req.body;
+
+    const result = await UserService.resendVerifyCode(data);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Resend successfully',
+      data: result,
+    });
+  },
+);
+
 const resendActivationCode: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const data = req.body;
@@ -142,6 +157,7 @@ const resendActivationCode: RequestHandler = catchAsync(
     });
   },
 );
+
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
   // const token = req.headers.authorization || '';
   await UserService.resetPassword(req);
@@ -185,6 +201,7 @@ export const UserController = {
   activateUser,
   deleteMyAccount,
   checkIsValidForgetActivationCode,
-  resendActivationCode,
+  resendVerifyCode,
   blockUser,
+  resendActivationCode,
 };

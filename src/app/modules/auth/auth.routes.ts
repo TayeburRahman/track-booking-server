@@ -34,7 +34,8 @@ router.patch(
 );
 router.post('/forgot-password', UserController.forgotPass);
 router.post('/reset-password', UserController.resetPassword);
-router.post('/resend', UserController.resendActivationCode);
+router.post('/resend', UserController.resendVerifyCode);
+router.post('/active-resend', UserController.resendActivationCode);
 router.post('/verify-otp', UserController.checkIsValidForgetActivationCode);
 
 router.get(
@@ -76,6 +77,7 @@ router.post(
   AdminController.login,
 );
 router.post('/admin/refresh-token', AdminController.refreshToken);
+
 router.post('/admin/forgot-password', AdminController.forgotPass);
 router.post(
   '/admin/verify-otp',
@@ -88,6 +90,7 @@ router.patch(
   auth(ENUM_USER_ROLE.ADMIN),
   AdminController.changePassword,
 );
+
 router.post(
   '/admin/add-admin',
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
