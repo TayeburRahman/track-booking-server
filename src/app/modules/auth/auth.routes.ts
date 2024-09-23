@@ -27,6 +27,7 @@ router.delete(
   auth(ENUM_USER_ROLE.USER),
   UserController.deleteMyAccount,
 );
+
 router.patch(
   '/change-password',
   auth(ENUM_USER_ROLE.USER),
