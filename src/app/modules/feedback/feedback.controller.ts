@@ -35,11 +35,11 @@ const addReplyToFeedback = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteFeedback = catchAsync(async (req: Request, res: Response) => {
-  const {message, success} = await FeedBackService.deleteFeedback(req); 
+  const { message, success } = await FeedBackService.deleteFeedback(req);
   sendResponse(res, {
     statusCode: 200,
     success,
-    message
+    message,
   });
 });
 
@@ -47,5 +47,5 @@ export const FeedbackController = {
   addReplyToFeedback,
   sendFeedBack,
   getFeedback,
-  deleteFeedback
+  deleteFeedback,
 };
