@@ -54,7 +54,7 @@ const deleteTermsConditions = async (id: string) => {
 const addCustomerCare = async (payload: { contactNumber: string }) => {
   const isExist = await Customer.findOne();
   if (isExist) {
-    await Customer.findOneAndUpdate({}, payload, {
+    return await Customer.findOneAndUpdate({}, payload, {
       new: true,
       runValidators: true,
     });
