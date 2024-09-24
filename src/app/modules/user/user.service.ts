@@ -7,7 +7,6 @@ import bcrypt from 'bcrypt';
 import ApiError from '../../../errors/ApiError';
 import {
   IActivationRequest,
-  IActivationToken,
   IRegistration,
   IReqUser,
   IUser,
@@ -18,13 +17,7 @@ import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 import config from '../../../config';
 import { Request } from 'express';
 import { jwtHelpers } from '../../../helpers/jwtHelpers';
-import {
-  IChangePassword,
-  ILoginUser,
-  ILoginUserResponse,
-  IRefreshTokenResponse,
-} from '../auth/auth.interface';
-import { updateImageUrl } from '../../../utils/url-modifier';
+import { IChangePassword, ILoginUser } from '../auth/auth.interface';
 import QueryBuilder from '../../../builder/QueryBuilder';
 import { IGenericResponse } from '../../../interfaces/paginations';
 import httpStatus from 'http-status';
@@ -44,7 +37,7 @@ const registrationUser = async (payload: IRegistration) => {
     email,
     password,
     confirmPassword,
-    expirationTime: Date.now() + 2 * 60 * 1000,
+    expirationTime: Date.now() + 3 * 60 * 1000,
   } as unknown as IUser;
 
   const isEmailExist = await User.findOne({ email, isActive: true });
@@ -71,7 +64,7 @@ const registrationUser = async (payload: IRegistration) => {
   try {
     sendEmail({
       email: user.email,
-      subject: 'Activate Your Account',
+      subject: 'Activate Your Account!',
       html: registrationSuccessEmailBody(data),
     });
   } catch (error: any) {
@@ -132,7 +125,7 @@ const activateUser = async (payload: IActivationRequest) => {
   };
 };
 
-cron.schedule('*/3 * * * *', async () => {
+cron.schedule('* * * * *', async () => {
   try {
     const now = new Date();
     const result = await User.updateMany(
