@@ -194,7 +194,6 @@ export const UserController = {
   registrationUser,
   login,
   changePassword,
-
   updateProfile,
   forgotPass,
   resetPassword,

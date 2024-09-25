@@ -74,22 +74,22 @@ const driverSchema = new Schema<IDriver>(
       type: String,
       required: false,
     },
-    truckSize: {
-      type: String,
-      // required: false,
-    },
-    truckType: {
-      type: String,
-      // required: false,
-    },
-    cargoCapacity: {
-      type: String,
-      // required: false,
-    },
-    services: {
-      type: [String],
-      required: false,
-    },
+    // truckSize: {
+    //   type: String,
+    //   // required: false,
+    // },
+    // truckType: {
+    //   type: String,
+    //   // required: false,
+    // },
+    // cargoCapacity: {
+    //   type: String,
+    //   // required: false,
+    // },
+    // services: {
+    //   type: [String],
+    //   required: false,
+    // },
     kmForPrice: {
       type: String,
       required: false,
@@ -98,22 +98,22 @@ const driverSchema = new Schema<IDriver>(
     //   type: String,
     //   // required: false,
     // },
-    bankAccountNumber: {
-      type: String,
-      required: false,
-    },
-    bankName: {
-      type: String,
-      required: false,
-    },
-    routingNumber: {
-      type: String,
-      required: false,
-    },
-    accountHolderName: {
-      type: String,
-      required: false,
-    },
+    // bankAccountNumber: {
+    //   type: String,
+    //   required: false,
+    // },
+    // bankName: {
+    //   type: String,
+    //   required: false,
+    // },
+    // routingNumber: {
+    //   type: String,
+    //   required: false,
+    // },
+    // accountHolderName: {
+    //   type: String,
+    //   required: false,
+    // },
     verifyCode: {
       type: String,
     },

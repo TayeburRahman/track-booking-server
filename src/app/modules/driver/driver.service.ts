@@ -292,13 +292,11 @@ const loginDriver = async (payload: ILoginUser) => {
 };
 
 //!
-const deleteMyAccount = async (payload: {
-  email: string;
-  password: string;
-}) => {
-  const { email, password } = payload;
+const deleteMyAccount = async (req: Request) => {
+  const { password } = req.body;
+  const { userId } = req.user as any;
 
-  const isDriverExist = await Driver.isDriverExist(email);
+  const isDriverExist = await Driver.findById(userId);
 
   //@ts-ignore
   if (!isDriverExist) {
@@ -311,7 +309,7 @@ const deleteMyAccount = async (payload: {
   ) {
     throw new ApiError(402, 'Password is incorrect');
   }
-  return await Driver.findOneAndDelete({ email });
+  return await Driver.findOneAndDelete({ _id: userId });
 };
 
 //!

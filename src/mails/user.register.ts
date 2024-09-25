@@ -1,4 +1,5 @@
-export const registrationSuccessEmailBody = (userData: any) => `
+export const registrationSuccessEmailBody = (userData: any) =>
+  `
   <html>
     <head>
       <style>
