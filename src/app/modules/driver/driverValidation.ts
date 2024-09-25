@@ -32,18 +32,18 @@ const createDriverSchema = z.object({
     // price: z.string({
     //   required_error: 'Price is required',
     // }),
-    bankAccountNumber: z.string({
-      required_error: 'Bank account number is required',
-    }),
-    bankName: z.string({
-      required_error: 'Bank name is required',
-    }),
-    routingNumber: z.string({
-      required_error: 'Routing number is required',
-    }),
-    accountHolderName: z.string({
-      required_error: 'Account holder name is required',
-    }),
+    // bankAccountNumber: z.string({
+    //   required_error: 'Bank account number is required',
+    // }),
+    // bankName: z.string({
+    //   required_error: 'Bank name is required',
+    // }),
+    // routingNumber: z.string({
+    //   required_error: 'Routing number is required',
+    // }),
+    // accountHolderName: z.string({
+    //   required_error: 'Account holder name is required',
+    // }),
   }),
   files: z.object({
     licenseFrontImage: z
@@ -87,20 +87,19 @@ const updateDriverSchema = z.object({
       })
       .optional(),
     phoneNumber: z.string().optional(),
-
     password: z.string().optional(),
     drivingLicenseNumber: z.string().optional(),
     drivingLicenseExpireDate: z.date().optional(),
     truckRegistrationNumber: z.string().optional(),
-    truckSize: z.string().optional(),
-    truckType: z.string().optional(),
-    cargoCapacity: z.string().optional(),
+    // truckSize: z.string().optional(),
+    // truckType: z.string().optional(),
+    // cargoCapacity: z.string().optional(),
     kmForPrice: z.string().optional(),
     // price: z.string().optional(),
-    bankAccountNumber: z.string().optional(),
-    bankName: z.string().optional(),
-    routingNumber: z.string().optional(),
-    accountHolderName: z.string().optional(),
+    // bankAccountNumber: z.string().optional(),
+    // bankName: z.string().optional(),
+    // routingNumber: z.string().optional(),
+    // accountHolderName: z.string().optional(),
     address: z.string().optional(),
     role: z.string().optional(),
   }),
