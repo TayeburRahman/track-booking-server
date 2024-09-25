@@ -278,13 +278,11 @@ const loginUser = async (payload: ILoginUser) => {
   };
 };
 //!
-const deleteMyAccount = async (payload: {
-  email: string;
-  password: string;
-}) => {
-  const { email, password } = payload;
+const deleteMyAccount = async (req: Request) => {
+  const { password } = req.body;
+  const { userId } = req.user as any;
 
-  const isUserExist = await User.isUserExist(email);
+  const isUserExist = await User.findById(userId);
   //@ts-ignore
   if (!isUserExist) {
     throw new ApiError(404, 'User does not exist');
@@ -296,7 +294,7 @@ const deleteMyAccount = async (payload: {
   ) {
     throw new ApiError(402, 'Password is incorrect');
   }
-  return await User.findOneAndDelete({ email });
+  return await User.findOneAndDelete({ _id: userId });
 };
 
 //!
