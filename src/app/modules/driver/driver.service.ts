@@ -297,10 +297,17 @@ const deleteMyAccount = async (req: Request) => {
   const { userId } = req.user as any;
 
   const isDriverExist = await Driver.findById(userId);
-
   //@ts-ignore
   if (!isDriverExist) {
     throw new ApiError(404, 'Driver does not exist');
+  }
+
+  const currentTrip = await Trip.findOne({
+    $and: [{ driver: userId }, { acceptStatus: 'accepted' }],
+  });
+
+  if (currentTrip) {
+    throw new ApiError(400, 'Please end your current trip!');
   }
 
   if (

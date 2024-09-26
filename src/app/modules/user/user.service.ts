@@ -28,6 +28,7 @@ import { sendResetEmail } from '../auth/sendResetMails';
 import { userSearchableField } from './user.constants';
 import { logger } from '../../../shared/logger';
 import Notification from '../notifications/notifications.model';
+import Trip from '../trip/trip.model';
 
 //!
 const registrationUser = async (payload: IRegistration) => {
@@ -279,6 +280,14 @@ const deleteMyAccount = async (req: Request) => {
   //@ts-ignore
   if (!isUserExist) {
     throw new ApiError(404, 'User does not exist');
+  }
+
+  const currentTrip = await Trip.findOne({
+    $and: [{ user: userId }, { acceptStatus: 'accepted' }],
+  });
+
+  if (currentTrip) {
+    throw new ApiError(400, 'Please end your current trip!');
   }
 
   if (

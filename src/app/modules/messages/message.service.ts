@@ -35,10 +35,12 @@ const sendMessage = async (data: any, io: Server) => {
 
   conversation.messages.push(newMessage._id);
   await Promise.all([conversation.save(), newMessage.save()]);
-
+  // console.log('',newMessage)
   //@ts-ignore
-  io.to(senderId).emit('single-message', newMessage || []);
-  io.to(receiverId).emit('single-message', newMessage || []);
+  if (newMessage?._id) {
+    io.to(senderId).emit('single-message', newMessage);
+    io.to(receiverId).emit('single-message', newMessage);
+  }
 
   return newMessage;
 };
@@ -51,7 +53,7 @@ const getMessages = async (data: any, io: Server) => {
   }).populate({
     path: 'messages',
     options: {
-      sort: { createdAt: 1 },
+      sort: { createdAt: -1 },
       skip: (page - 1) * 20,
       limit: 20,
     },
@@ -60,7 +62,7 @@ const getMessages = async (data: any, io: Server) => {
   if (!conversation) {
     return 'Conversation not found';
   }
-
+  console.log(conversation)
   io.to(senderId).emit('message', conversation?.messages || []);
   io.to(receiverId).emit('message', conversation?.messages || []);
 
@@ -76,7 +78,7 @@ const conversationUser = async (data: any, io: Server) => {
     }).populate({
       path: 'messages',
       options: {
-        sort: { createdAt: 1 },
+        sort: { createdAt: -1 },
         limit: 1,
       },
     });
@@ -122,6 +124,7 @@ const conversationUser = async (data: any, io: Server) => {
         participantId => participantMap[participantId.toString()],
       ),
     }));
+    console.log("================================",conversationsWithParticipants);
 
     // Emit the result to the socket
     io.to(loginId).emit(
