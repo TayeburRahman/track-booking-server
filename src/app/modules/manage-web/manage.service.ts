@@ -52,6 +52,7 @@ const deleteTermsConditions = async (id: string) => {
   return await TermsConditions.findByIdAndDelete(id);
 };
 const addCustomerCare = async (payload: { contactNumber: string }) => {
+  // console.log('payload',payload);
   const isExist = await Customer.findOne();
   if (isExist) {
     return await Customer.findOneAndUpdate({}, payload, {
