@@ -1,5 +1,20 @@
 import mongoose, { Schema } from 'mongoose';
-import { ITrip } from './trip.interface';
+import { IExtra, ITrip } from './trip.interface';
+
+const extra = new Schema<IExtra>({
+  image: {
+    type: String,
+    required: true,
+  },
+  text: {
+    type: String,
+    required: true,
+  },
+  amount: {
+    type: Number,
+    required: true,
+  },
+});
 
 const TripSchema = new mongoose.Schema<ITrip>(
   {
@@ -50,6 +65,9 @@ const TripSchema = new mongoose.Schema<ITrip>(
     },
     transfer_amount: {
       type: Number,
+    },
+    extraCost: {
+      type: extra,
     },
     payment: {
       type: String,

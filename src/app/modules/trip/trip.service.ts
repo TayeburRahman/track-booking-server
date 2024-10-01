@@ -149,6 +149,65 @@ const myTripRequests = async (req: Request) => {
   return { result, currentTrip: !!currentTrip };
 };
 
+const addExtraCost = async (req: any) => {
+  const { files } = req;
+  const { text, amount, tripId }: any = req.body;
+
+  let image: string | undefined;
+
+  if (files.image) {
+    image = `/images/trucks/${files.image[0].filename}`;
+  }
+
+  // Validate parameters
+  if (!image || !text || !tripId || !amount) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Invalid request parameters: image, text, amount, and tripId are required.',
+    );
+  }
+
+  // Update trip with extra cost
+  const trip: any = await Trip.findByIdAndUpdate(
+    tripId,
+    {
+      $set: { extraCost: { image, text, amount } },
+    },
+    { new: true },
+  );
+
+  if (!trip) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Trip not found!');
+  }
+
+  // Create notifications
+  const userNotification = await Notification.create({
+    title: 'Extra Cost Added to Your Trip',
+    driver: trip.driver,
+    user: trip.user,
+    message: `An extra cost of ${amount} has been added to your trip.`,
+  });
+
+  const driverNotification = await Notification.create({
+    title: 'Extra Cost Successfully Added',
+    driver: trip.driver,
+    user: trip.user,
+    message: `An extra cost of ${amount} has been added to the trip.`,
+  });
+
+  // Emit notifications via socket
+  if (trip) {
+    //@ts-ignore
+    const socketIo = global.io;
+    socketIo.to(trip.user.toString()).emit('notification', userNotification);
+    socketIo
+      .to(trip.driver.toString())
+      .emit('notification', driverNotification);
+  }
+
+  return { extraCost: trip?.extraCost };
+};
+
 const acceptTrip = async (req: Request) => {
   const { id } = req.params;
   const { userId } = req.user as IReqUser;
@@ -411,4 +470,5 @@ export const TripService = {
   endTrip,
   cancelTrip,
   searchTripDetails,
+  addExtraCost,
 };

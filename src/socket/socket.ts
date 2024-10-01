@@ -158,7 +158,7 @@ io.on('connection', async (socket: Socket) => {
       },
     );
 
-    // Handle GET MASSAGE event: 'get-message'
+    // Update location
     socket.on(
       'update-location',
       async (data: {
@@ -167,6 +167,7 @@ io.on('connection', async (socket: Socket) => {
         latitude: string;
         address: string;
       }) => {
+        // console.log('====update location========================', data);
         try {
           if (!data.driver_id || !data.longitude || !data.latitude) {
             socket.emit('error', {

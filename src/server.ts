@@ -20,7 +20,7 @@ async function main() {
       typeof config.port === 'number' ? config.port : Number(config.port);
     myServer = server.listen(port, config.base_url as string, () => {
       logger.info(
-        `Example app listening on port http://103.161.9.133:${config.port}`,
+        `Example app listening on port http://192.168.10.152:${config.port}`,
       );
     });
   } catch (error) {

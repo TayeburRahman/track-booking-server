@@ -15,6 +15,7 @@ export type IMessage = {
   image: string;
   text: string;
   externalModelType: string;
+  createdAt: Date;
 };
 
 export type Participant = {

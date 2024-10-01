@@ -26,9 +26,12 @@ const messageSchema = new mongoose.Schema<IMessage>(
     image: {
       type: String,
     },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
   {
-    timestamps: true,
     toJSON: {
       virtuals: true,
     },

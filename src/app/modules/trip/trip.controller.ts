@@ -95,6 +95,17 @@ const searchTripDetails = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const addExtraCost = catchAsync(async (req: Request, res: Response) => {
+  const result = await TripService.addExtraCost(req);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Add extra cost successfully',
+    data: result,
+  });
+});
+
 export const TripController = {
   insertIntoDB,
   driverTripHistory,
@@ -105,4 +116,5 @@ export const TripController = {
   endTrip,
   cancelTrip,
   searchTripDetails,
+  addExtraCost,
 };

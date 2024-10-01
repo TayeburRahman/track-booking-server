@@ -62,7 +62,7 @@ const getMessages = async (data: any, io: Server) => {
   if (!conversation) {
     return 'Conversation not found';
   }
-  console.log(conversation)
+  console.log(conversation);
   io.to(senderId).emit('message', conversation?.messages || []);
   io.to(receiverId).emit('message', conversation?.messages || []);
 
@@ -124,7 +124,10 @@ const conversationUser = async (data: any, io: Server) => {
         participantId => participantMap[participantId.toString()],
       ),
     }));
-    console.log("================================",conversationsWithParticipants);
+    console.log(
+      '================================',
+      conversationsWithParticipants,
+    );
 
     // Emit the result to the socket
     io.to(loginId).emit(

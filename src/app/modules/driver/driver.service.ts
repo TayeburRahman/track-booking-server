@@ -630,6 +630,14 @@ const truckLocationUpdate = async (req: Request): Promise<IDriver | null> => {
 const locationUpdateSocket = async (data: any) => {
   const { latitude, longitude, address, driver_id }: any = data;
 
+  // console.log(
+  //   'latitude, longitude, address ',
+  //   latitude,
+  //   longitude,
+  //   address,
+  //   driver_id,
+  // );
+
   // Validate parameters
   if (!driver_id || latitude === undefined || longitude === undefined) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid request parameters');

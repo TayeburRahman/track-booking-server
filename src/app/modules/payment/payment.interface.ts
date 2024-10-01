@@ -12,7 +12,7 @@ export type IPayment = {
 };
 
 export type Payload = {
-  amount: number; // Changed to number for better type safety
+  amount: number;
 };
 
 export type PurchaseUnit = {

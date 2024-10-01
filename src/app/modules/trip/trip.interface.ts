@@ -2,6 +2,12 @@ import { Types } from 'mongoose';
 import { IUser } from '../user/user.interface';
 import { IDriver } from '../driver/driver.interface';
 
+export type IExtra = {
+  image: String;
+  text: String;
+  amount: number;
+};
+
 export type ITrip = {
   user: Types.ObjectId | IUser;
   driver: Types.ObjectId | IDriver;
@@ -18,4 +24,5 @@ export type ITrip = {
   payment: 'pending' | 'complete';
   transfer_batch_id: String;
   transfer_amount: Number;
+  extraCost: IExtra;
 };

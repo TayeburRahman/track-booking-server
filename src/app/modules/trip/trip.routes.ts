@@ -4,6 +4,7 @@ import { ENUM_USER_ROLE } from '../../../enums/user';
 import { TripController } from './trip.controller';
 import { validateRequest } from '../../middlewares/validateRequest';
 import { TripValidation } from './trip.validation';
+import { uploadFile } from '../../middlewares/fileUploader';
 // import { TripService } from './trip.service';
 const router = Router();
 
@@ -49,6 +50,12 @@ router.patch(
   '/cancel/:id',
   auth(ENUM_USER_ROLE.DRIVER, ENUM_USER_ROLE.USER),
   TripController.cancelTrip,
+);
+router.patch(
+  '/add_cost',
+  uploadFile(),
+  auth(ENUM_USER_ROLE.DRIVER),
+  TripController.addExtraCost,
 );
 
 export const TripRoutes = router;
