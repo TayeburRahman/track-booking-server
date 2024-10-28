@@ -428,6 +428,15 @@ const deleteAdmin = async (id: string) => {
   return result;
 };
 
+const myUserProfile = async (req: Request) => {
+  const { id } = req.params;
+  const result = await Admin.findById(id);
+  if (!result) {
+    throw new ApiError(404, 'Profile not found');
+  }
+  return result;
+};
+
 export const AdminService = {
   createUser,
   getAllUsers,
@@ -444,4 +453,5 @@ export const AdminService = {
   resetPassword,
   deleteAdmin,
   checkIsValidForgetActivationCode,
+  myUserProfile,
 };
